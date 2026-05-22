@@ -1,5 +1,5 @@
 # ============================================================================
-# CAMPUSNEX ROOT CONTAINERIZATION (UNIFIED BACKEND & SaaS PORTAL)
+# CAMPUSNEX ROOT CONTAINERIZATION (UNIFIED BACKEND, PORTAL & DATABASE UTILS)
 # ============================================================================
 
 FROM node:18-alpine AS builder
@@ -29,6 +29,9 @@ COPY backend/ ./backend/
 
 # Copy sibling static SaaS portal assets
 COPY saas_portal/ ./saas_portal/
+
+# Copy database schema and seed definitions for auto-migration
+COPY database/ ./database/
 
 # Expose HTTP, WebSockets, and REST API port
 EXPOSE 5000

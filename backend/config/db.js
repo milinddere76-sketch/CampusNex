@@ -5,7 +5,7 @@ const bcrypt = require('bcryptjs');
 const net = require('net');
 
 // Loaded from Environment
-const dbConfig = {
+let dbConfig = {
   host: process.env.PG_HOST || 'localhost',
   port: parseInt(process.env.PG_PORT || '5432'),
   user: process.env.PG_USER || 'postgres',
@@ -13,6 +13,22 @@ const dbConfig = {
   database: process.env.PG_DATABASE || 'campusnex',
   connectionTimeoutMillis: 2000 // Fail fast in 2 seconds if PG is not active
 };
+
+if (process.env.DATABASE_URL) {
+  try {
+    const url = new URL(process.env.DATABASE_URL);
+    dbConfig = {
+      host: url.hostname,
+      port: parseInt(url.port || '5432'),
+      user: url.username,
+      password: decodeURIComponent(url.password),
+      database: url.pathname.substring(1),
+      connectionTimeoutMillis: 2000
+    };
+  } catch (err) {
+    console.error('⚠️ Failed to parse DATABASE_URL environment variable:', err);
+  }
+}
 
 let pool = null;
 let useFallback = false;
@@ -270,8 +286,36 @@ const testPoolConnection = async () => {
       // Attempt small query to test connection
       const res = await pool.query('SELECT NOW()');
       console.log('🚀 PostgreSQL connected successfully at ' + res.rows[0].now);
+
+      // Perform Automated Auto-migration and Auto-seeding
+      const tableCheck = await pool.query("SELECT to_regclass('public.colleges') AS exists");
+      if (!tableCheck.rows[0].exists) {
+        console.log('🌱 Empty database detected! Running automated migrations and seeding...');
+        const schemaPath = path.join(__dirname, '..', '..', 'database', 'schema.sql');
+        const seedPath = path.join(__dirname, '..', '..', 'database', 'seed.sql');
+
+        if (fs.existsSync(schemaPath) && fs.existsSync(seedPath)) {
+          const schemaSql = fs.readFileSync(schemaPath, 'utf8');
+          const seedSql = fs.readFileSync(seedPath, 'utf8');
+
+          console.log('📊 Injecting schemas...');
+          await pool.query(schemaSql);
+          
+          console.log('🌾 Populating seed records...');
+          await pool.query(seedSql);
+          
+          console.log('🚀 Automated database provisioning completed successfully!');
+        } else {
+          console.warn('⚠️ Migration SQL files not found in container at paths:');
+          console.warn(` - Schema: ${schemaPath}`);
+          console.warn(` - Seed: ${seedPath}`);
+        }
+      } else {
+        console.log('✅ PostgreSQL database tables verified.');
+      }
     } catch (err) {
-      console.log('⚠️ PostgreSQL connection failed. Activating local JSON DB database fallback engine.');
+      console.error('⚠️ PostgreSQL connection failed or migration errored:', err);
+      console.log('⚠️ Activating local JSON DB database fallback engine.');
       useFallback = true;
       initMockDb();
     }
