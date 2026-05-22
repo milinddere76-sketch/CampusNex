@@ -158,7 +158,7 @@
       tbody.innerHTML = '';
 
       try {
-        const res = await fetch('http://localhost:5000/api/colleges');
+        const res = await fetch('/api/colleges');
         const data = await res.json();
         
         if (data.success && data.colleges.length > 0) {

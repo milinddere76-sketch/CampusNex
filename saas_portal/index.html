@@ -199,7 +199,7 @@
       feedback.textContent = '🔍 Checking availability...';
 
       try {
-        const res = await fetch(`http://localhost:5000/api/colleges/subdomain/${sub}`);
+        const res = await fetch(`/api/colleges/subdomain/${sub}`);
         const data = await res.json();
         
         if (data.success) {
@@ -239,7 +239,7 @@
       };
 
       try {
-        const response = await fetch('http://localhost:5000/api/colleges/onboard', {
+        const response = await fetch('/api/colleges/onboard', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(collegeData)

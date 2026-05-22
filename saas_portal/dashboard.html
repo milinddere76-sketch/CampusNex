@@ -232,7 +232,7 @@
       indicator.innerHTML = '<i class="fas fa-sync fa-spin"></i> <span>SYNCING...</span>';
 
       try {
-        const response = await fetch('http://localhost:5000/api/sync/process', {
+        const response = await fetch('/api/sync/process', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ device_id: 'browser_client_web', queue: offlineQueue })
@@ -258,7 +258,7 @@
     // Load metrics from backend
     async function loadAnalytics() {
       try {
-        const res = await fetch('http://localhost:5000/api/analytics/dashboard');
+        const res = await fetch('/api/analytics/dashboard');
         const data = await res.json();
         if (data.success) {
           document.getElementById('statStudents').textContent = data.stats.total_students;
@@ -299,7 +299,7 @@
         alert('💾 Attendance stored in local SQLite database! Will sync automatically when connection re-establishes.');
       } else {
         try {
-          const res = await fetch('http://localhost:5000/api/attendance/mark', {
+          const res = await fetch('/api/attendance/mark', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(action.payload)
@@ -324,7 +324,7 @@
       tbody.innerHTML = '';
       
       try {
-        const res = await fetch('http://localhost:5000/api/attendance');
+        const res = await fetch('/api/attendance');
         const data = await res.json();
         
         if (data.success && data.attendance.length > 0) {
@@ -386,7 +386,7 @@
       container.innerHTML = '';
 
       try {
-        const res = await fetch('http://localhost:5000/api/analytics/dropout-prediction');
+        const res = await fetch('/api/analytics/dropout-prediction');
         const data = await res.json();
         
         if (data.success && data.predictions.length > 0) {
@@ -448,7 +448,8 @@
     // WebSockets Real-Time Client Setup
     function initWebSockets() {
       try {
-        ws = new WebSocket('ws://localhost:5000');
+        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        ws = new WebSocket(`${protocol}//${window.location.host}`);
         
         ws.onopen = () => {
           console.log('🔌 WebSocket Connection Active');
@@ -533,7 +534,7 @@
 
       // 2. Query AI Assistant Endpoint
       try {
-        const res = await fetch('http://localhost:5000/api/ai/ask', {
+        const res = await fetch('/api/ai/ask', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer test_profile_jwt' },
           body: JSON.stringify({ question: text, context_subject: 'Computer Science' })

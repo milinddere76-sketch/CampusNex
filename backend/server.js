@@ -26,6 +26,9 @@ app.use(express.urlencoded({ extended: true }));
 // Serve Static Uploads
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 
+// Serve SaaS Portal static files
+app.use(express.static(path.join(__dirname, '../saas_portal')));
+
 // Register Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/colleges', collegeRoutes);
@@ -35,8 +38,8 @@ app.use('/api/sync', syncRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/ai', aiRoutes);
 
-// Base Route
-app.get('/', (req, res) => {
+// Server Status API Route
+app.get('/api-status', (req, res) => {
   res.json({
     success: true,
     message: 'CampusNex Core Multi-Tenant Server - Active',
