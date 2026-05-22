@@ -83,7 +83,7 @@ class WhiteLabelTheme extends ChangeNotifier {
         foregroundColor: isDarkMode ? Colors.white : Colors.black87,
         centerTitle: true,
       ),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: colorScheme.surface,
         elevation: 2,
         shape: RoundedRectangleBorder(
