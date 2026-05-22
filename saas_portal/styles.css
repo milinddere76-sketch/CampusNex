@@ -1,0 +1,315 @@
+/* ============================================================================
+   CAMPUSNEX DYNAMIC SaaS GLOBAL BRAND SYSTEM (VANILLA CSS)
+   ============================================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap');
+
+:root {
+  /* Dynamic White-Label Brand Tokens */
+  --primary-color: #6366f1;
+  --primary-hover: #4f46e5;
+  --secondary-color: #06b6d4;
+  --secondary-glow: rgba(6, 182, 212, 0.15);
+  
+  /* Dark Slate Aesthetics */
+  --bg-main: #0b0f19;
+  --bg-card: rgba(17, 24, 39, 0.8);
+  --bg-panel: rgba(31, 41, 55, 0.5);
+  --border-color: rgba(255, 255, 255, 0.08);
+  --text-primary: #f3f4f6;
+  --text-secondary: #9ca3af;
+  --text-muted: #6b7280;
+  
+  /* Status Colors */
+  --success: #10b981;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --info: #3b82f6;
+
+  /* Card blur presets */
+  --glass-blur: blur(16px);
+  --card-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  --glow-shadow: 0 0 25px var(--secondary-glow);
+}
+
+[data-theme="light"] {
+  /* Light System Variables */
+  --bg-main: #f8fafc;
+  --bg-card: rgba(255, 255, 255, 0.85);
+  --bg-panel: rgba(241, 245, 249, 0.7);
+  --border-color: rgba(0, 0, 0, 0.08);
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+  --card-shadow: 0 8px 32px 0 rgba(148, 163, 184, 0.15);
+}
+
+/* Base Configuration */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', sans-serif;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+body {
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+/* Gorgeous Glassmorphic Wrappers */
+.glass-container {
+  background: var(--bg-card);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--card-shadow);
+  border-radius: 16px;
+}
+
+/* Micro-Animations & Glow Effects */
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+  color: #ffffff;
+  border: none;
+  padding: 12px 24px;
+  font-weight: 500;
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.45);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+.glow-hover {
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.glow-hover:hover {
+  border-color: var(--primary-color);
+  box-shadow: var(--glow-shadow);
+}
+
+/* Navigation System Styles */
+.nav-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 5%;
+  border-bottom: 1px solid var(--border-color);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(11, 15, 25, 0.8);
+  backdrop-filter: blur(8px);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 24px;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 800;
+  background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.nav-links {
+  display: flex;
+  gap: 30px;
+  list-style: none;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: var(--text-secondary);
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.nav-links a:hover, .nav-links a.active {
+  color: var(--text-primary);
+}
+
+/* Beautiful Onboarding Form styling */
+.form-input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  outline: none;
+  font-size: 14px;
+  transition: border-color 0.2s ease;
+}
+
+.form-input:focus {
+  border-color: var(--primary-color);
+}
+
+.form-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+}
+
+/* Dynamic Onboarding Layout grid */
+.grid-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  padding: 60px 5%;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Card metrics */
+.stat-card {
+  padding: 24px;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-panel);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.stat-val {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.stat-desc {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* Offline sync visual indicators */
+.sync-indicator {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sync-online {
+  background: rgba(16, 185, 129, 0.15);
+  color: var(--success);
+}
+
+.sync-offline {
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--danger);
+}
+
+.sync-pending {
+  background: rgba(245, 158, 11, 0.15);
+  color: var(--warning);
+}
+
+/* Chat bubble styling */
+.chat-window {
+  display: flex;
+  flex-direction: column;
+  height: 400px;
+  border-radius: 12px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-color);
+}
+
+.chat-messages {
+  flex-grow: 1;
+  padding: 16px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.chat-bubble {
+  max-width: 70%;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.chat-bubble.sent {
+  align-self: flex-end;
+  background: var(--primary-color);
+  color: #fff;
+  border-bottom-right-radius: 2px;
+}
+
+.chat-bubble.received {
+  align-self: flex-start;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+  border-bottom-left-radius: 2px;
+}
+
+.chat-input-row {
+  display: flex;
+  gap: 10px;
+  padding: 12px;
+  border-top: 1px solid var(--border-color);
+}
+
+/* Live Map indicator */
+.gps-map {
+  width: 100%;
+  height: 220px;
+  border-radius: 12px;
+  background: #111827;
+  border: 1px solid var(--border-color);
+  position: relative;
+  overflow: hidden;
+}
+
+.bus-marker {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  background: var(--secondary-color);
+  border: 3px solid #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 15px var(--secondary-color);
+  transition: top 1s ease, left 1s ease;
+}
+
+.map-route-line {
+  position: absolute;
+  border-top: 2px dashed rgba(255, 255, 255, 0.2);
+  width: 80%;
+  top: 50%;
+  left: 10%;
+}

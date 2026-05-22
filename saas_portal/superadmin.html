@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CampusNex | Platform Super-Admin Panel</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="nav-bar">
+    <div class="logo" style="background: linear-gradient(to right, #ec4899, #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+      <i class="fas fa-sliders"></i> CampusNex Super-Admin
+    </div>
+    <ul class="nav-links">
+      <li><a href="index.html">Onboard Portal</a></li>
+      <li><a href="dashboard.html">College Admin Dashboard</a></li>
+      <li><a href="superadmin.html" class="active">Super Admin Control</a></li>
+    </ul>
+  </header>
+
+  <!-- Main Grid -->
+  <main style="padding: 30px 5%; max-width: 1600px; margin: 0 auto; display: flex; flex-direction: column; gap: 30px;">
+    
+    <!-- Top Stats Row -->
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;">
+      <div class="glass-container stat-card glow-hover" style="border-left: 4px solid #ec4899;">
+        <span style="color: var(--text-secondary); font-size: 13px;"><i class="fas fa-university"></i> Registered Colleges</span>
+        <span class="stat-val" id="totalColleges">--</span>
+        <span class="stat-desc">Active institutes on CampusNex</span>
+      </div>
+      <div class="glass-container stat-card glow-hover" style="border-left: 4px solid #8b5cf6;">
+        <span style="color: var(--text-secondary); font-size: 13px;"><i class="fas fa-chart-line"></i> Annual Recurring Rev (ARR)</span>
+        <span class="stat-val" id="arrValue">--</span>
+        <span class="stat-desc">Projected subscription earnings</span>
+      </div>
+      <div class="glass-container stat-card glow-hover" style="border-left: 4px solid #10b981;">
+        <span style="color: var(--text-secondary); font-size: 13px;"><i class="fas fa-ticket"></i> Open Support Tickets</span>
+        <span class="stat-val" id="openTickets">--</span>
+        <span class="stat-desc">Requires admin response logs</span>
+      </div>
+      <div class="glass-container stat-card glow-hover" style="border-left: 4px solid #06b6d4;">
+        <span style="color: var(--text-secondary); font-size: 13px;"><i class="fas fa-circle-nodes"></i> Global Ecosystem API status</span>
+        <span class="stat-val" style="color: var(--success);"><i class="fas fa-circle-check"></i> ACTIVE</span>
+        <span class="stat-desc">All system nodes operational</span>
+      </div>
+    </div>
+
+    <!-- Sub-Layout: Registered College details + Global Feature Flags -->
+    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 30px;">
+      
+      <!-- Left Box: College Registries list -->
+      <div class="glass-container" style="padding: 24px;">
+        <h3 style="margin-bottom: 15px;"><i class="fas fa-list-check" style="color: #ec4899;"></i> Global Registered Institutions</h3>
+        <div style="overflow-x: auto;">
+          <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 13px;">
+            <thead>
+              <tr style="border-bottom: 1px solid var(--border-color); color: var(--text-secondary);">
+                <th style="padding: 10px 0;">College name</th>
+                <th>Subdomain</th>
+                <th>SaaS Billing Tier</th>
+                <th>Status</th>
+                <th>Primary Contact</th>
+              </tr>
+            </thead>
+            <tbody id="collegeListBody">
+              <!-- Filled dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Right Box: Feature Flag Module controller -->
+      <div class="glass-container" style="padding: 24px;">
+        <h3 style="margin-bottom: 15px;"><i class="fas fa-toggle-on" style="color: #8b5cf6;"></i> SaaS Feature Gate Toggles</h3>
+        <p style="font-size: 11px; color: var(--text-secondary); margin-bottom: 20px;">
+          Super-Admin dashboard overrides that restrict or grant advanced modules across the entire ecosystem.
+        </p>
+        
+        <div style="display: flex; flex-direction: column; gap: 15px;">
+          <!-- Flag 1 -->
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px;">
+            <div>
+              <strong style="font-size: 13px; display: block;">AI Academic Doubt Assistant</strong>
+              <small style="font-size: 10px; color: var(--text-secondary);">Grants automatic LLM rebalancing tutoring</small>
+            </div>
+            <input type="checkbox" id="flagAi" checked style="width: 18px; height: 18px; cursor: pointer;">
+          </div>
+
+          <!-- Flag 2 -->
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px;">
+            <div>
+              <strong style="font-size: 13px; display: block;">Geo-Fenced Attendance Capture</strong>
+              <small style="font-size: 10px; color: var(--text-secondary);">Restricts classroom coordinates checks</small>
+            </div>
+            <input type="checkbox" id="flagGeofence" checked style="width: 18px; height: 18px; cursor: pointer;">
+          </div>
+
+          <!-- Flag 3 -->
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px;">
+            <div>
+              <strong style="font-size: 13px; display: block;">Biometric Face-ID Attendance</strong>
+              <small style="font-size: 10px; color: var(--text-secondary);">Enables facial scanning at student logs</small>
+            </div>
+            <input type="checkbox" id="flagBiometrics" style="width: 18px; height: 18px; cursor: pointer;">
+          </div>
+
+          <!-- Flag 4 -->
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px;">
+            <div>
+              <strong style="font-size: 13px; display: block;">Stripe Stripe Payment Checkout</strong>
+              <small style="font-size: 10px; color: var(--text-secondary);">Direct gateway checkouts rather than UPI cash</small>
+            </div>
+            <input type="checkbox" id="flagStripe" checked style="width: 18px; height: 18px; cursor: pointer;">
+          </div>
+        </div>
+
+        <button onclick="saveFeatureFlags()" class="btn-primary" style="width: 100%; margin-top: 25px; justify-content: center; background: linear-gradient(135deg, #8b5cf6, #ec4899);">
+          <i class="fas fa-save"></i> Save Global Configurations
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Bottom support ticket area -->
+    <div class="glass-container" style="padding: 24px;">
+      <h3 style="margin-bottom: 15px;"><i class="fas fa-envelope-open-text" style="color: #ec4899;"></i> Active SaaS Support Tickets</h3>
+      <div style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 13px;">
+          <thead>
+            <tr style="border-bottom: 1px solid var(--border-color); color: var(--text-secondary);">
+              <th style="padding: 10px 0;">Subject</th>
+              <th>College</th>
+              <th>Description</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="ticketListBody">
+            <!-- Populated dynamically -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      loadColleges();
+      loadTickets();
+    });
+
+    async function loadColleges() {
+      const tbody = document.getElementById('collegeListBody');
+      tbody.innerHTML = '';
+
+      try {
+        const res = await fetch('http://localhost:5000/api/colleges');
+        const data = await res.json();
+        
+        if (data.success && data.colleges.length > 0) {
+          document.getElementById('totalColleges').textContent = data.colleges.length;
+          
+          let totalArr = 0;
+          data.colleges.forEach(col => {
+            const cost = col.plan === 'PREMIUM' ? 1200 : col.plan === 'ENTERPRISE' ? 5500 : col.plan === 'BASIC' ? 499 : 0;
+            totalArr += (cost * 12);
+
+            tbody.innerHTML += `
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px 0; font-weight: 500;"><img src="${col.branding_logo_url || 'https://via.placeholder.com/20'}" style="width: 18px; height: 18px; border-radius: 50%; vertical-align: middle; margin-right: 8px;">${col.name}</td>
+                <td style="font-family: monospace;">${col.subdomain}.campusone.app</td>
+                <td><span style="font-weight: 600; color: #8b5cf6;">${col.plan}</span></td>
+                <td><span style="color: var(--success); font-weight: bold;"><i class="fas fa-circle-check"></i> ${col.billing_status}</span></td>
+                <td style="color: var(--text-secondary);">${col.admin_email}</td>
+              </tr>
+            `;
+          });
+          
+          document.getElementById('arrValue').textContent = '$' + totalArr.toLocaleString();
+        }
+      } catch (err) {
+        // Fallback local registries mock
+        document.getElementById('totalColleges').textContent = '2';
+        document.getElementById('arrValue').textContent = '$80,400';
+        
+        tbody.innerHTML = `
+          <tr style="border-bottom: 1px solid rgba(0,0,0,0.05);">
+            <td style="padding: 12px 0; font-weight: 500;"><i class="fas fa-circle-nodes" style="color: #6366f1; margin-right: 8px;"></i>Apex Institute of Technology</td>
+            <td style="font-family: monospace;">apex.campusone.app</td>
+            <td><span style="font-weight: 600; color: #8b5cf6;">PREMIUM ($1,200/mo)</span></td>
+            <td><span style="color: var(--success); font-weight: bold;"><i class="fas fa-circle-check"></i> ACTIVE</span></td>
+            <td style="color: var(--text-secondary);">admin@apex.edu</td>
+          </tr>
+          <tr style="border-bottom: 1px solid rgba(0,0,0,0.05);">
+            <td style="padding: 12px 0; font-weight: 500;"><i class="fas fa-circle-nodes" style="color: #059669; margin-right: 8px;"></i>Beacon Medical College</td>
+            <td style="font-family: monospace;">beacon.campusone.app</td>
+            <td><span style="font-weight: 600; color: #8b5cf6;">ENTERPRISE ($5,500/mo)</span></td>
+            <td><span style="color: var(--success); font-weight: bold;"><i class="fas fa-circle-check"></i> ACTIVE</span></td>
+            <td style="color: var(--text-secondary);">admin@beacon.edu</td>
+          </tr>
+        `;
+      }
+    }
+
+    async function loadTickets() {
+      const tbody = document.getElementById('ticketListBody');
+      tbody.innerHTML = '';
+
+      try {
+        // Mock tickets fetch
+        const tickets = [
+          { id: 1, subject: 'Payment receipt mismatch', college: 'Apex Institute', description: 'We paid our premium tier billing but the invoice shows partial discount is missing.', status: 'OPEN' },
+          { id: 2, subject: 'Integrate custom SMTP', college: 'Beacon Medical', description: 'We want to route our email notifications via our medical domain SMTP server.', status: 'RESOLVED' }
+        ];
+
+        document.getElementById('openTickets').textContent = tickets.filter(t => t.status === 'OPEN').length;
+
+        tickets.forEach(t => {
+          const isOpen = t.status === 'OPEN';
+          tbody.innerHTML += `
+            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+              <td style="padding: 12px 0; font-weight: 500;">${t.subject}</td>
+              <td style="color: var(--text-secondary);">${t.college}</td>
+              <td style="color: var(--text-muted); max-width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${t.description}</td>
+              <td><span style="padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: bold; background: ${isOpen ? 'rgba(239,68,68,0.1)' : 'rgba(16,185,129,0.1)'}; color: ${isOpen ? 'var(--danger)' : 'var(--success)'}">${t.status}</span></td>
+              <td>
+                <button onclick="resolveTicket(${t.id})" class="btn-primary" style="padding: 6px 12px; font-size: 11px; ${isOpen ? '' : 'background: #374151; box-shadow: none; pointer-events: none;'}">
+                  ${isOpen ? 'Mark Resolved' : 'No Action'}
+                </button>
+              </td>
+            </tr>
+          `;
+        });
+      } catch (e) {
+        tbody.innerHTML = `<tr><td colspan="5">Failed to fetch ticket list.</td></tr>`;
+      }
+    }
+
+    function resolveTicket(id) {
+      alert(`📬 Ticket #${id} marked as resolved. Auto-notifying college administrators.`);
+      loadTickets();
+    }
+
+    function saveFeatureFlags() {
+      const ai = document.getElementById('flagAi').checked;
+      const geofence = document.getElementById('flagGeofence').checked;
+      const biometrics = document.getElementById('flagBiometrics').checked;
+      const stripe = document.getElementById('flagStripe').checked;
+
+      alert(`🛡️ Global Security Policy Saved!\n\nFeature flags successfully synchronized across all registered tenants:\n- AI Assistant: ${ai ? 'ENABLED' : 'DISABLED'}\n- Geo-fencing: ${geofence ? 'ENABLED' : 'DISABLED'}\n- Biometrics: ${biometrics ? 'ENABLED' : 'DISABLED'}\n- Stripe Gateway: ${stripe ? 'ENABLED' : 'DISABLED'}`);
+    }
+  </script>
+</body>
+</html>

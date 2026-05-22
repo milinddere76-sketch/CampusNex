@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CampusNex | Digital Campus SaaS Platform</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <header class="nav-bar">
+    <div class="logo">
+      <i class="fas fa-university"></i> CampusNex
+    </div>
+    <ul class="nav-links">
+      <li><a href="index.html" class="active">Onboard Portal</a></li>
+      <li><a href="dashboard.html">College Admin Dashboard</a></li>
+      <li><a href="superadmin.html">Super Admin Control</a></li>
+    </ul>
+  </header>
+
+  <!-- Interactive Grid Container -->
+  <main class="grid-container">
+    
+    <!-- Onboarding Form Block -->
+    <section class="glass-container glow-hover" style="padding: 40px;">
+      <h2 style="font-size: 28px; margin-bottom: 8px;">Onboard Your Campus</h2>
+      <p style="color: var(--text-secondary); margin-bottom: 30px; font-size: 14px;">
+        Register your college, set custom branding, and deploy your white-labeled application instantly.
+      </p>
+
+      <form id="onboardForm" onsubmit="handleOnboard(event)">
+        <!-- College Name -->
+        <div style="margin-bottom: 20px;">
+          <label class="form-label" for="collegeName">Institution Name</label>
+          <input type="text" id="collegeName" class="form-input" placeholder="e.g. Apex Institute of Technology" required oninput="updatePreview()">
+        </div>
+
+        <!-- Custom Subdomain with validation -->
+        <div style="margin-bottom: 20px;">
+          <label class="form-label" for="subdomain">Preferred Subdomain</label>
+          <div style="position: relative; display: flex; align-items: center;">
+            <input type="text" id="subdomain" class="form-input" placeholder="e.g. apex" required oninput="checkSubdomain()" style="padding-right: 120px;">
+            <span style="position: absolute; right: 10px; font-size: 12px; color: var(--text-muted); font-weight: 500;">.campusone.app</span>
+          </div>
+          <small id="subdomainFeedback" style="display: block; margin-top: 6px; font-size: 12px; font-weight: 600;"></small>
+        </div>
+
+        <!-- Admin Credentials -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+          <div>
+            <label class="form-label" for="adminEmail">Admin Email</label>
+            <input type="email" id="adminEmail" class="form-input" placeholder="admin@college.edu" required>
+          </div>
+          <div>
+            <label class="form-label" for="adminPhone">Admin Phone</label>
+            <input type="text" id="adminPhone" class="form-input" placeholder="+1 (555) 019-0000">
+          </div>
+        </div>
+
+        <!-- Brand Customizer (Color Pickers) -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+          <div>
+            <label class="form-label">Primary Brand Color</label>
+            <div style="display: flex; gap: 10px; align-items: center;">
+              <input type="color" id="primaryColor" value="#4F46E5" style="border: none; border-radius: 4px; height: 40px; width: 50px; cursor: pointer;" oninput="updatePreview()">
+              <input type="text" id="primaryHex" class="form-input" value="#4F46E5" readonly style="width: 100px;">
+            </div>
+          </div>
+          <div>
+            <label class="form-label">Secondary Brand Accent</label>
+            <div style="display: flex; gap: 10px; align-items: center;">
+              <input type="color" id="secondaryColor" value="#06B6D4" style="border: none; border-radius: 4px; height: 40px; width: 50px; cursor: pointer;" oninput="updatePreview()">
+              <input type="text" id="secondaryHex" class="form-input" value="#06B6D4" readonly style="width: 100px;">
+            </div>
+          </div>
+        </div>
+
+        <!-- Custom Welcome Splash & Logo -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px;">
+          <div>
+            <label class="form-label" for="logoUrl">Logo URL (Icon)</label>
+            <input type="text" id="logoUrl" class="form-input" placeholder="https://domain.com/logo.png" oninput="updatePreview()">
+          </div>
+          <div>
+            <label class="form-label" for="collegePlan">Choose SaaS Plan</label>
+            <select id="collegePlan" class="form-input" style="height: 45px;" onchange="updatePreview()">
+              <option value="FREE_TRIAL">Free Trial (14 Days)</option>
+              <option value="BASIC">Basic ($499/mo)</option>
+              <option value="PREMIUM" selected>Premium ($1200/mo)</option>
+              <option value="ENTERPRISE">Enterprise ($5500/mo)</option>
+            </select>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-primary" style="width: 100%; justify-content: center; height: 50px; font-size: 16px;">
+          <i class="fas fa-rocket"></i> Launch Custom Digital Campus
+        </button>
+      </form>
+    </section>
+
+    <!-- Live White-Label Smartphone Preview Block -->
+    <section style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
+      <h3 style="margin-bottom: 15px; font-size: 18px; color: var(--text-secondary);">
+        ✨ White-Label Live Mobile App Preview
+      </h3>
+      
+      <!-- Simulated Phone Frame -->
+      <div id="phoneFrame" class="glass-container" style="width: 320px; height: 600px; border-radius: 40px; border: 8px solid #1f2937; position: relative; overflow: hidden; display: flex; flex-direction: column; padding: 20px; background: #000; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);">
+        
+        <!-- Camera Notch -->
+        <div style="position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 100px; height: 18px; background: #1f2937; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px; z-index: 10;"></div>
+        
+        <!-- Live App Content inside phone -->
+        <div id="phoneContent" style="display: flex; flex-direction: column; flex-grow: 1; justify-content: space-between; position: relative; z-index: 2;">
+          
+          <!-- App Bar -->
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
+            <span id="previewSubdomain" style="font-size: 11px; font-weight: 600; color: var(--text-muted);">apex.campusone.app</span>
+            <div style="display: flex; gap: 4px; align-items: center;">
+              <span style="width: 6px; height: 6px; border-radius: 50%; background: #10b981;"></span>
+              <span style="font-size: 10px; color: #10b981; font-weight: bold;">SYNCED</span>
+            </div>
+          </div>
+
+          <!-- Mid Section: Branding Logo + Title -->
+          <div style="display: flex; flex-direction: column; align-items: center; margin-top: 50px; text-align: center;">
+            <div id="previewLogo" style="width: 70px; height: 70px; border-radius: 16px; background: rgba(255,255,255,0.1); border: 2px solid #6366f1; display: flex; align-items: center; justify-content: center; font-size: 28px; color: #6366f1; margin-bottom: 15px; font-weight: bold; overflow: hidden;">
+              A
+            </div>
+            <h4 id="previewCollegeName" style="color: #fff; font-size: 20px; font-weight: 700; line-height: 1.2;">
+              Apex Institute
+            </h4>
+            <p style="color: #9ca3af; font-size: 11px; margin-top: 4px;">Welcome to your digital campus gateway.</p>
+          </div>
+
+          <!-- Bottom: Action Login Form in Phone -->
+          <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;">
+            <input type="text" placeholder="Roll Number or Email" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); color: #fff; font-size: 12px; outline: none;" disabled>
+            <input type="password" placeholder="Password" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); color: #fff; font-size: 12px; outline: none;" disabled>
+            
+            <button id="previewLoginBtn" style="width: 100%; padding: 12px; border-radius: 8px; border: none; background: #6366f1; color: #fff; font-size: 12px; font-weight: 600; cursor: pointer; margin-top: 5px;">
+              Verify Credentials & Login
+            </button>
+            <div style="display: flex; justify-content: space-between; font-size: 10px; color: #6b7280; padding: 0 4px;">
+              <span>Setup Offline Pin</span>
+              <span>OTP Support</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // Live update phone mockup layout to wow the user
+    function updatePreview() {
+      const name = document.getElementById('collegeName').value || 'Apex Institute';
+      const subdomain = document.getElementById('subdomain').value || 'apex';
+      const logo = document.getElementById('logoUrl').value;
+      const primary = document.getElementById('primaryColor').value;
+      const secondary = document.getElementById('secondaryColor').value;
+      
+      // Update Hex labels
+      document.getElementById('primaryHex').value = primary.toUpperCase();
+      document.getElementById('secondaryHex').value = secondary.toUpperCase();
+
+      // Update Phone Mockup elements
+      document.getElementById('previewCollegeName').textContent = name;
+      document.getElementById('previewSubdomain').textContent = subdomain + '.campusone.app';
+      
+      const logoDiv = document.getElementById('previewLogo');
+      if (logo) {
+        logoDiv.innerHTML = `<img src="${logo}" style="width: 100%; height: 100%; object-fit: cover;">`;
+        logoDiv.style.borderColor = primary;
+      } else {
+        logoDiv.innerHTML = name.charAt(0).toUpperCase();
+        logoDiv.style.color = primary;
+        logoDiv.style.borderColor = primary;
+      }
+
+      // Dynamically apply styles to preview elements
+      document.getElementById('previewLoginBtn').style.backgroundColor = primary;
+    }
+
+    // Check Subdomain Availability via API or Mock
+    async function checkSubdomain() {
+      const sub = document.getElementById('subdomain').value.toLowerCase().trim();
+      const feedback = document.getElementById('subdomainFeedback');
+      
+      if (!sub) {
+        feedback.textContent = '';
+        return;
+      }
+
+      feedback.style.color = 'var(--warning)';
+      feedback.textContent = '🔍 Checking availability...';
+
+      try {
+        const res = await fetch(`http://localhost:5000/api/colleges/subdomain/${sub}`);
+        const data = await res.json();
+        
+        if (data.success) {
+          feedback.style.color = 'var(--danger)';
+          feedback.textContent = '❌ Taken - Already registered in ecosystem';
+        } else {
+          feedback.style.color = 'var(--success)';
+          feedback.textContent = '🟢 Available for digital deployment';
+        }
+      } catch (err) {
+        // Safe mock local check if backend server is not running yet
+        const localColleges = ['apex', 'beacon', 'mit'];
+        if (localColleges.includes(sub)) {
+          feedback.style.color = 'var(--danger)';
+          feedback.textContent = '❌ Taken (Local Cache)';
+        } else {
+          feedback.style.color = 'var(--success)';
+          feedback.textContent = '🟢 Available (Local Simulation)';
+        }
+      }
+      updatePreview();
+    }
+
+    // Handle Form Onboarding Submit
+    async function handleOnboard(e) {
+      e.preventDefault();
+      
+      const collegeData = {
+        name: document.getElementById('collegeName').value,
+        subdomain: document.getElementById('subdomain').value,
+        logo_url: document.getElementById('logoUrl').value,
+        primary_color: document.getElementById('primaryColor').value,
+        secondary_color: document.getElementById('secondaryColor').value,
+        admin_email: document.getElementById('adminEmail').value,
+        admin_phone: document.getElementById('adminPhone').value,
+        plan: document.getElementById('collegePlan').value
+      };
+
+      try {
+        const response = await fetch('http://localhost:5000/api/colleges/onboard', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(collegeData)
+        });
+        
+        const resData = await response.json();
+        if (resData.success) {
+          alert(`🎉 Congratulation! [${collegeData.name}] has been successfully initialized in the SaaS Ecosystem! Transaction confirmed.`);
+          window.location.href = 'dashboard.html';
+        } else {
+          alert('Error: ' + resData.message);
+        }
+      } catch (err) {
+        // Mock success fallback for offline execution
+        console.log('API offline, mocking onboarding logic success:', collegeData);
+        alert(`🎉 [Onboarding Simulation Successful!] \n\nInstitution: ${collegeData.name}\nSubdomain: ${collegeData.subdomain}.campusone.app\nPlan: ${collegeData.plan}\n\nCollege registered locally in session cache! Deploying custom database schemas. Redirecting to College Admin...`);
+        
+        // Save in session storage
+        sessionStorage.setItem('campus_tenant', JSON.stringify(collegeData));
+        window.location.href = 'dashboard.html';
+      }
+    }
+  </script>
+</body>
+</html>

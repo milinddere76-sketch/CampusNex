@@ -1,0 +1,572 @@
+{
+  "colleges": [
+    {
+      "id": 1,
+      "name": "Apex Institute of Technology",
+      "subdomain": "apex",
+      "domain": "apex.campusone.app",
+      "branding_logo_url": "https://images.unsplash.com/photo-1592280771190-3e2e4d571952?w=100&h=100&fit=crop&q=80",
+      "branding_primary_color": "#4F46E5",
+      "branding_secondary_color": "#06B6D4",
+      "admin_email": "admin@apex.edu",
+      "admin_phone": "+1 (555) 019-2834",
+      "plan": "PREMIUM",
+      "billing_status": "ACTIVE",
+      "created_at": "2026-05-22T14:24:54.841Z"
+    },
+    {
+      "id": 2,
+      "name": "Beacon University of Medical Sciences",
+      "subdomain": "beacon",
+      "domain": "beacon.campusone.app",
+      "branding_logo_url": "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=100&h=100&fit=crop&q=80",
+      "branding_primary_color": "#059669",
+      "branding_secondary_color": "#10B981",
+      "admin_email": "admin@beacon.edu",
+      "admin_phone": "+1 (555) 018-9900",
+      "plan": "ENTERPRISE",
+      "billing_status": "ACTIVE",
+      "created_at": "2026-05-22T14:24:54.841Z"
+    }
+  ],
+  "billing_transactions": [
+    {
+      "id": 1,
+      "college_id": 1,
+      "amount": 1200,
+      "currency": "USD",
+      "payment_method": "STRIPE",
+      "transaction_id": "txn_apex_2026_01",
+      "status": "SUCCESS",
+      "paid_at": "2026-05-22T14:24:54.841Z"
+    }
+  ],
+  "support_tickets": [
+    {
+      "id": 1,
+      "college_id": 1,
+      "subject": "Payment receipt mismatch",
+      "description": "We paid our premium tier billing but the invoice shows partial discount is missing.",
+      "status": "OPEN",
+      "created_at": "2026-05-22T14:24:54.841Z"
+    }
+  ],
+  "users": [
+    {
+      "id": "77777777-7777-7777-7777-777777777777",
+      "email": "admin@apex.edu",
+      "password_hash": "$2a$10$CuiagaN2.EWTQ/a8MiGrjOpflBRxJ7k04bgPFWO9evabVvPM7T1j.",
+      "phone": "+1 (555) 010-0001",
+      "full_name": "Dr. Donald Vance",
+      "role": "COLLEGE_ADMIN",
+      "device_id": "dev_admin_mac",
+      "is_active": true
+    },
+    {
+      "id": "11111111-1111-1111-1111-111111111111",
+      "email": "principal@apex.edu",
+      "password_hash": "$2a$10$CuiagaN2.EWTQ/a8MiGrjOpflBRxJ7k04bgPFWO9evabVvPM7T1j.",
+      "phone": "+1 (555) 010-0002",
+      "full_name": "Dr. Arthur Pendelton",
+      "role": "PRINCIPAL",
+      "device_id": "dev_principal_ipad",
+      "is_active": true
+    },
+    {
+      "id": "22222222-2222-2222-2222-222222222222",
+      "email": "hod.cs@apex.edu",
+      "password_hash": "$2a$10$CuiagaN2.EWTQ/a8MiGrjOpflBRxJ7k04bgPFWO9evabVvPM7T1j.",
+      "phone": "+1 (555) 010-0003",
+      "full_name": "Dr. Elizabeth Hopper",
+      "role": "HOD",
+      "device_id": "dev_hod_desktop",
+      "is_active": true
+    },
+    {
+      "id": "33333333-3333-3333-3333-333333333333",
+      "email": "faculty.smith@apex.edu",
+      "password_hash": "$2a$10$CuiagaN2.EWTQ/a8MiGrjOpflBRxJ7k04bgPFWO9evabVvPM7T1j.",
+      "phone": "+1 (555) 010-0004",
+      "full_name": "Prof. Marcus Smith",
+      "role": "FACULTY",
+      "device_id": "dev_fac_phone",
+      "is_active": true
+    },
+    {
+      "id": "44444444-4444-4444-4444-444444444444",
+      "email": "student.alex@apex.edu",
+      "password_hash": "$2a$10$CuiagaN2.EWTQ/a8MiGrjOpflBRxJ7k04bgPFWO9evabVvPM7T1j.",
+      "phone": "+1 (555) 010-0005",
+      "full_name": "Alex Doe",
+      "role": "STUDENT",
+      "device_id": "dev_student_alex_android",
+      "is_active": true
+    },
+    {
+      "id": "55555555-5555-5555-5555-555555555555",
+      "email": "student.sam@apex.edu",
+      "password_hash": "$2a$10$CuiagaN2.EWTQ/a8MiGrjOpflBRxJ7k04bgPFWO9evabVvPM7T1j.",
+      "phone": "+1 (555) 010-0006",
+      "full_name": "Samantha Jenkins",
+      "role": "STUDENT",
+      "device_id": "dev_student_sam_iphone",
+      "is_active": true
+    },
+    {
+      "id": "66666666-6666-6666-6666-666666666666",
+      "email": "parent.doe@apex.edu",
+      "password_hash": "$2a$10$CuiagaN2.EWTQ/a8MiGrjOpflBRxJ7k04bgPFWO9evabVvPM7T1j.",
+      "phone": "+1 (555) 010-0007",
+      "full_name": "Robert Doe",
+      "role": "PARENT",
+      "device_id": "dev_parent_phone",
+      "is_active": true
+    },
+    {
+      "id": "88888888-8888-8888-8888-888888888888",
+      "email": "librarian@apex.edu",
+      "password_hash": "$2a$10$CuiagaN2.EWTQ/a8MiGrjOpflBRxJ7k04bgPFWO9evabVvPM7T1j.",
+      "phone": "+1 (555) 010-0008",
+      "full_name": "Albert Bookman",
+      "role": "LIBRARIAN",
+      "device_id": "dev_lib_desk",
+      "is_active": true
+    },
+    {
+      "id": "99999999-9999-9999-9999-999999999999",
+      "email": "warden@apex.edu",
+      "password_hash": "$2a$10$CuiagaN2.EWTQ/a8MiGrjOpflBRxJ7k04bgPFWO9evabVvPM7T1j.",
+      "phone": "+1 (555) 010-0009",
+      "full_name": "Warden Jenkins",
+      "role": "HOSTEL_WARDEN",
+      "device_id": "dev_warden_tab",
+      "is_active": true
+    }
+  ],
+  "departments": [
+    {
+      "id": 1,
+      "name": "Computer Science & Engineering",
+      "code": "CSE",
+      "hod_id": "22222222-2222-2222-2222-222222222222"
+    },
+    {
+      "id": 2,
+      "name": "Electrical & Electronics Engineering",
+      "code": "EEE",
+      "hod_id": null
+    }
+  ],
+  "courses": [
+    {
+      "id": 1,
+      "department_id": 1,
+      "name": "Data Structures and Algorithms",
+      "code": "CS-201",
+      "credits": 4
+    },
+    {
+      "id": 2,
+      "department_id": 1,
+      "name": "Database Management Systems",
+      "code": "CS-302",
+      "credits": 4
+    },
+    {
+      "id": 3,
+      "department_id": 2,
+      "name": "Signals and Systems",
+      "code": "EE-204",
+      "credits": 3
+    }
+  ],
+  "semesters": [
+    {
+      "id": 1,
+      "name": "Fall Semester 2026",
+      "start_date": "2026-08-01",
+      "end_date": "2026-12-15",
+      "is_active": true
+    },
+    {
+      "id": 2,
+      "name": "Spring Semester 2027",
+      "start_date": "2027-01-10",
+      "end_date": "2027-05-20",
+      "is_active": false
+    }
+  ],
+  "classes": [
+    {
+      "id": 1,
+      "course_id": 1,
+      "semester_id": 1,
+      "faculty_id": "33333333-3333-3333-3333-333333333333",
+      "room_number": "Lab 3, CS Block",
+      "timetable_day": "MONDAY",
+      "start_time": "09:00",
+      "end_time": "10:30"
+    },
+    {
+      "id": 2,
+      "course_id": 2,
+      "semester_id": 1,
+      "faculty_id": "33333333-3333-3333-3333-333333333333",
+      "room_number": "Room 102, CSE Block",
+      "timetable_day": "WEDNESDAY",
+      "start_time": "11:00",
+      "end_time": "12:30"
+    },
+    {
+      "id": 3,
+      "course_id": 3,
+      "semester_id": 1,
+      "faculty_id": "22222222-2222-2222-2222-222222222222",
+      "room_number": "Room 304, EEE Block",
+      "timetable_day": "TUESDAY",
+      "start_time": "14:00",
+      "end_time": "15:30"
+    }
+  ],
+  "students": [
+    {
+      "user_id": "44444444-4444-4444-4444-444444444444",
+      "roll_number": "APEX-2024-CSE-004",
+      "department_id": 1,
+      "admission_year": 2024,
+      "current_semester_id": 1,
+      "parent_id": "66666666-6666-6666-6666-666666666666",
+      "cgpa": 3.84
+    },
+    {
+      "user_id": "55555555-5555-5555-5555-555555555555",
+      "roll_number": "APEX-2024-CSE-012",
+      "department_id": 1,
+      "admission_year": 2024,
+      "current_semester_id": 1,
+      "parent_id": null,
+      "cgpa": 3.25
+    }
+  ],
+  "attendance": [
+    {
+      "id": 1,
+      "student_id": "44444444-4444-4444-4444-444444444444",
+      "class_id": 1,
+      "date": "2026-05-18",
+      "status": "PRESENT",
+      "method": "QR",
+      "verified_by_faculty_id": "33333333-3333-3333-3333-333333333333"
+    },
+    {
+      "id": 2,
+      "student_id": "55555555-5555-5555-5555-555555555555",
+      "class_id": 1,
+      "date": "2026-05-18",
+      "status": "ABSENT",
+      "method": "MANUAL",
+      "verified_by_faculty_id": "33333333-3333-3333-3333-333333333333"
+    },
+    {
+      "id": 3,
+      "student_id": "44444444-4444-4444-4444-444444444444",
+      "class_id": 2,
+      "date": "2026-05-20",
+      "status": "PRESENT",
+      "method": "GEOFENCE",
+      "verified_by_faculty_id": "33333333-3333-3333-3333-333333333333"
+    },
+    {
+      "id": 4,
+      "student_id": "55555555-5555-5555-5555-555555555555",
+      "class_id": 2,
+      "date": "2026-05-20",
+      "status": "PRESENT",
+      "method": "QR",
+      "verified_by_faculty_id": "33333333-3333-3333-3333-333333333333"
+    }
+  ],
+  "assignments": [
+    {
+      "id": 1,
+      "class_id": 1,
+      "title": "Red-Black Tree Balance Implementation",
+      "description": "Write clean implementation of RB-Tree insertion algorithms in Java or C++",
+      "due_date": "2026-05-28T23:59:00Z",
+      "max_points": 100,
+      "attachment_url": "https://apex.campusone.app/storage/assignments/rbtree.pdf"
+    },
+    {
+      "id": 2,
+      "class_id": 2,
+      "title": "SQL Normalization Assignment",
+      "description": "Complete normalization tables up to 3NF & BCNF for given transactional fields.",
+      "due_date": "2026-05-30T18:00:00Z",
+      "max_points": 50,
+      "attachment_url": "https://apex.campusone.app/storage/assignments/sql_norm.pdf"
+    }
+  ],
+  "assignment_submissions": [
+    {
+      "id": 1,
+      "assignment_id": 2,
+      "student_id": "44444444-4444-4444-4444-444444444444",
+      "submitted_at": "2026-05-22T14:24:54.941Z",
+      "file_url": "https://apex.campusone.app/storage/submissions/alex_sql.pdf",
+      "points_obtained": 48,
+      "feedback": "Excellent work! Database keys identified correctly.",
+      "is_graded": true
+    }
+  ],
+  "exams": [
+    {
+      "id": 1,
+      "class_id": 1,
+      "title": "DSA Midterm Examination",
+      "date": "2026-05-10",
+      "max_marks": 100
+    }
+  ],
+  "exam_results": [
+    {
+      "id": 1,
+      "exam_id": 1,
+      "student_id": "44444444-4444-4444-4444-444444444444",
+      "marks_obtained": 92,
+      "grade": "A+",
+      "remarks": "Outstanding problem-solving logic"
+    },
+    {
+      "id": 2,
+      "exam_id": 1,
+      "student_id": "55555555-5555-5555-5555-555555555555",
+      "marks_obtained": 76,
+      "grade": "B",
+      "remarks": "Needs optimization study on trees"
+    }
+  ],
+  "fees": [
+    {
+      "id": 1,
+      "student_id": "44444444-4444-4444-4444-444444444444",
+      "title": "Tuition Fees - Term 1",
+      "amount_due": 4500,
+      "amount_paid": 4500,
+      "status": "PAID",
+      "billing_category": "TUITION",
+      "due_date": "2026-05-01"
+    },
+    {
+      "id": 2,
+      "student_id": "44444444-4444-4444-4444-444444444444",
+      "title": "Hostel Mess Charges",
+      "amount_due": 800,
+      "amount_paid": 300,
+      "status": "PARTIAL",
+      "billing_category": "HOSTEL",
+      "due_date": "2026-05-30"
+    },
+    {
+      "id": 3,
+      "student_id": "55555555-5555-5555-5555-555555555555",
+      "title": "Tuition Fees - Term 1",
+      "amount_due": 4500,
+      "amount_paid": 0,
+      "status": "UNPAID",
+      "billing_category": "TUITION",
+      "due_date": "2026-05-01"
+    }
+  ],
+  "fee_payments": [
+    {
+      "id": 1,
+      "fee_id": 1,
+      "payment_method": "STRIPE",
+      "transaction_id": "ch_stripe_apex_tuition_01",
+      "amount_paid": 4500,
+      "paid_at": "2026-05-22T14:24:54.941Z"
+    },
+    {
+      "id": 2,
+      "fee_id": 2,
+      "payment_method": "UPI",
+      "transaction_id": "upi_pay_apex_mess_01",
+      "amount_paid": 300,
+      "paid_at": "2026-05-22T14:24:54.941Z"
+    }
+  ],
+  "library_books": [
+    {
+      "id": 1,
+      "title": "Introduction to Algorithms (CLRS)",
+      "author": "Thomas H. Cormen",
+      "barcode_isbn": "9780262033848",
+      "total_copies": 12,
+      "available_copies": 11
+    },
+    {
+      "id": 2,
+      "title": "Database System Concepts",
+      "author": "Abraham Silberschatz",
+      "barcode_isbn": "9780073523323",
+      "total_copies": 8,
+      "available_copies": 8
+    }
+  ],
+  "library_issues": [
+    {
+      "id": 1,
+      "book_id": 1,
+      "student_id": "44444444-4444-4444-4444-444444444444",
+      "issued_at": "2026-05-22T14:24:54.941Z",
+      "due_date": "2026-06-05T14:24:54.941Z",
+      "returned_at": null,
+      "fine_amount": 0,
+      "fine_status": "NONE"
+    }
+  ],
+  "hostel_rooms": [
+    {
+      "id": 1,
+      "block_name": "Aryabhata Block A",
+      "room_number": "203",
+      "capacity": 2,
+      "occupied_count": 1,
+      "fee_amount": 1500
+    },
+    {
+      "id": 2,
+      "block_name": "Aryabhata Block A",
+      "room_number": "204",
+      "capacity": 2,
+      "occupied_count": 0,
+      "fee_amount": 1500
+    }
+  ],
+  "hostel_allocations": [
+    {
+      "id": 1,
+      "room_id": 1,
+      "student_id": "44444444-4444-4444-4444-444444444444",
+      "allocated_at": "2026-05-22T14:24:54.941Z"
+    }
+  ],
+  "hostel_visitors": [],
+  "transport_buses": [
+    {
+      "id": 1,
+      "bus_number": "NY-72B-9102",
+      "driver_name": "Mr. Jerry Nelson",
+      "driver_phone": "+1 (555) 012-9844",
+      "capacity": 40,
+      "gps_latitude": 40.7128,
+      "gps_longitude": -74.006
+    }
+  ],
+  "transport_routes": [
+    {
+      "id": 1,
+      "route_name": "Downtown to North Campus Line",
+      "start_point": "Grand Station",
+      "end_point": "Apex North Gate",
+      "stops": [
+        {
+          "name": "Metro Hub",
+          "lat": 40.715,
+          "lng": -74.008
+        },
+        {
+          "name": "Central Library",
+          "lat": 40.721,
+          "lng": -74.012
+        }
+      ]
+    }
+  ],
+  "transport_allocations": [
+    {
+      "id": 1,
+      "bus_id": 1,
+      "route_id": 1,
+      "student_id": "55555555-5555-5555-5555-555555555555",
+      "pickup_point": "Central Library"
+    }
+  ],
+  "placements": [
+    {
+      "id": 1,
+      "company_name": "Google",
+      "job_title": "Associate Software Engineer",
+      "eligibility_criteria_cgpa": 3.5,
+      "package_lpa": 24.5,
+      "interview_date": "2026-06-15",
+      "eligibility_departments": [
+        1
+      ]
+    },
+    {
+      "id": 2,
+      "company_name": "Tesla",
+      "job_title": "Embedded Control Systems Intern",
+      "eligibility_criteria_cgpa": 3.2,
+      "package_lpa": 18,
+      "interview_date": "2026-06-20",
+      "eligibility_departments": [
+        1,
+        2
+      ]
+    }
+  ],
+  "placement_applications": [
+    {
+      "id": 1,
+      "placement_id": 1,
+      "student_id": "44444444-4444-4444-4444-444444444444",
+      "resume_url": "https://apex.campusone.app/storage/resumes/alex_doe_resume.pdf",
+      "status": "APPLIED"
+    }
+  ],
+  "chat_messages": [
+    {
+      "id": 1,
+      "sender_id": "33333333-3333-3333-3333-333333333333",
+      "receiver_id": "44444444-4444-4444-4444-444444444444",
+      "message": "Hey Alex, please submit your Red-Black tree insertion code by tomorrow evening.",
+      "sent_at": "2026-05-22T11:24:54.941Z",
+      "is_read": true
+    },
+    {
+      "id": 2,
+      "sender_id": "44444444-4444-4444-4444-444444444444",
+      "receiver_id": "33333333-3333-3333-3333-333333333333",
+      "message": "Yes Professor, finishing up the balance node rotation tests now. Will send PDF submission soon.",
+      "sent_at": "2026-05-22T12:24:54.941Z",
+      "is_read": false
+    }
+  ],
+  "notices": [
+    {
+      "id": 1,
+      "title": "Midterm Review Seminar",
+      "content": "Prof Marcus is conducting a DSA review lecture on Binary Search Tree rebalancing algorithms this Friday evening at 5 PM in Room 102. Attendance is highly recommended.",
+      "audience_roles": [
+        "STUDENT"
+      ],
+      "attachment_url": "https://apex.campusone.app/notices/dsa_session.pdf",
+      "created_at": "2026-05-22T14:24:54.941Z"
+    },
+    {
+      "id": 2,
+      "title": "Annual Cultural Tech Fest 2026",
+      "content": "Registrations are now officially open for ApexTechFest 2026. Cash rewards up to $15,000 for standard hackathon submissions.",
+      "audience_roles": [
+        "STUDENT",
+        "FACULTY",
+        "COLLEGE_ADMIN"
+      ],
+      "attachment_url": null,
+      "created_at": "2026-05-22T14:24:54.941Z"
+    }
+  ],
+  "offline_sync_queue": []
+}
