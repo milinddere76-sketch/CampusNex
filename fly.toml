@@ -1,4 +1,4 @@
-# fly.toml app configuration file generated for campusnex on 2026-05-22T17:22:01Z
+# fly.toml app configuration file generated for campusnex on 2026-05-22T17:37:38Z
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
@@ -14,7 +14,7 @@ primary_region = 'bom'
   PORT = '5000'
 
 [http_service]
-  internal_port = 5000
+  internal_port = 8080
   force_https = true
   auto_stop_machines = 'off'
   auto_start_machines = true
