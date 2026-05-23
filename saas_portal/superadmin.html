@@ -84,6 +84,7 @@
                 <th>SaaS Billing Tier</th>
                 <th>Status</th>
                 <th>Primary Contact</th>
+                <th>Academic Stream Provisioning</th>
               </tr>
             </thead>
             <tbody id="collegeListBody">
@@ -240,6 +241,19 @@
       const tbody = document.getElementById('collegeListBody');
       tbody.innerHTML = '';
 
+      const allStreams = [
+        { id: 1, name: 'Science' },
+        { id: 2, name: 'Engineering' },
+        { id: 3, name: 'Commerce' },
+        { id: 4, name: 'Arts & Humanities' },
+        { id: 5, name: 'Law' },
+        { id: 6, name: 'Medical & Health' },
+        { id: 7, name: 'Agriculture' },
+        { id: 8, name: 'Management' },
+        { id: 9, name: 'Design & Arch' },
+        { id: 10, name: 'Vocational' }
+      ];
+
       try {
         const res = await fetch('/api/colleges', { headers: authHeaders() });
         if (res.status === 401) { logout(); return; }
@@ -253,6 +267,25 @@
             const cost = col.plan === 'PREMIUM' ? 1200 : col.plan === 'ENTERPRISE' ? 5500 : col.plan === 'BASIC' ? 499 : 0;
             totalArr += (cost * 12);
 
+            const reqStreams = typeof col.requested_streams === 'string' ? JSON.parse(col.requested_streams || '[]') : (col.requested_streams || []);
+            const assStreams = typeof col.assigned_streams === 'string' ? JSON.parse(col.assigned_streams || '[]') : (col.assigned_streams || []);
+
+            let streamCheckboxes = `<div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; min-width: 280px; padding: 4px; background: rgba(0,0,0,0.2); border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">`;
+            allStreams.forEach(s => {
+              const isReq = reqStreams.includes(s.id);
+              const isAss = assStreams.includes(s.id);
+              const bg = isReq ? 'rgba(251,191,36,0.15)' : 'transparent';
+              const border = isReq ? '1px solid rgba(251,191,36,0.4)' : '1px solid transparent';
+              
+              streamCheckboxes += `
+                <label style="display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text-secondary); cursor: pointer; padding: 4px 6px; border-radius: 4px; background: ${bg}; border: ${border};" title="${isReq ? 'Requested by college admin at onboarding' : ''}">
+                  <input type="checkbox" class="col-stream-cb-${col.id}" value="${s.id}" ${isAss ? 'checked' : ''} style="width: 14px; height: 14px; cursor: pointer;">
+                  <span style="${isReq ? 'color:#fbbf24; font-weight:bold;' : ''}">${s.name}</span>
+                </label>
+              `;
+            });
+            streamCheckboxes += `</div>`;
+
             tbody.innerHTML += `
               <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
                 <td style="padding: 12px 0; font-weight: 500;"><img src="${col.branding_logo_url || 'https://via.placeholder.com/20'}" style="width: 18px; height: 18px; border-radius: 50%; vertical-align: middle; margin-right: 8px;">${col.name}</td>
@@ -260,6 +293,12 @@
                 <td><span style="font-weight: 600; color: #8b5cf6;">${col.plan}</span></td>
                 <td><span style="color: var(--success); font-weight: bold;"><i class="fas fa-circle-check"></i> ${col.billing_status}</span></td>
                 <td style="color: var(--text-secondary);">${col.admin_email}</td>
+                <td style="padding: 8px 0;">
+                  ${streamCheckboxes}
+                  <button onclick="saveCollegeStreams(${col.id})" class="btn-primary" style="padding: 4px 8px; font-size: 10px; margin-top: 6px; width: 100%; justify-content: center; background: linear-gradient(135deg, #ec4899, #8b5cf6); box-shadow: none;">
+                    <i class="fas fa-save"></i> Save Streams
+                  </button>
+                </td>
               </tr>
             `;
           });
@@ -270,23 +309,53 @@
         // Fallback local registries mock
         document.getElementById('totalColleges').textContent = '2';
         document.getElementById('arrValue').textContent = '$80,400';
+
+        // Load colleges from mock cache if exists, otherwise generate defaults
+        let localColleges = JSON.parse(localStorage.getItem('fallback_colleges_cache'));
+        if (!localColleges) {
+          localColleges = [
+            { id: 1, name: 'Apex Institute of Technology', subdomain: 'apex', plan: 'PREMIUM', billing_status: 'ACTIVE', admin_email: 'admin@apex.edu', requested_streams: '[1,2]', assigned_streams: '[1,2]' },
+            { id: 2, name: 'Beacon University of Medical Sciences', subdomain: 'beacon', plan: 'ENTERPRISE', billing_status: 'ACTIVE', admin_email: 'admin@beacon.edu', requested_streams: '[6]', assigned_streams: '[6]' }
+          ];
+          localStorage.setItem('fallback_colleges_cache', JSON.stringify(localColleges));
+        }
         
-        tbody.innerHTML = `
-          <tr style="border-bottom: 1px solid rgba(0,0,0,0.05);">
-            <td style="padding: 12px 0; font-weight: 500;"><i class="fas fa-circle-nodes" style="color: #6366f1; margin-right: 8px;"></i>Apex Institute of Technology</td>
-            <td style="font-family: monospace;">apex.campusone.app</td>
-            <td><span style="font-weight: 600; color: #8b5cf6;">PREMIUM ($1,200/mo)</span></td>
-            <td><span style="color: var(--success); font-weight: bold;"><i class="fas fa-circle-check"></i> ACTIVE</span></td>
-            <td style="color: var(--text-secondary);">admin@apex.edu</td>
-          </tr>
-          <tr style="border-bottom: 1px solid rgba(0,0,0,0.05);">
-            <td style="padding: 12px 0; font-weight: 500;"><i class="fas fa-circle-nodes" style="color: #059669; margin-right: 8px;"></i>Beacon Medical College</td>
-            <td style="font-family: monospace;">beacon.campusone.app</td>
-            <td><span style="font-weight: 600; color: #8b5cf6;">ENTERPRISE ($5,500/mo)</span></td>
-            <td><span style="color: var(--success); font-weight: bold;"><i class="fas fa-circle-check"></i> ACTIVE</span></td>
-            <td style="color: var(--text-secondary);">admin@beacon.edu</td>
-          </tr>
-        `;
+        localColleges.forEach(col => {
+          const reqStreams = typeof col.requested_streams === 'string' ? JSON.parse(col.requested_streams || '[]') : (col.requested_streams || []);
+          const assStreams = typeof col.assigned_streams === 'string' ? JSON.parse(col.assigned_streams || '[]') : (col.assigned_streams || []);
+
+          let streamCheckboxes = `<div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; min-width: 280px; padding: 4px; background: rgba(0,0,0,0.2); border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">`;
+          allStreams.forEach(s => {
+            const isReq = reqStreams.includes(s.id);
+            const isAss = assStreams.includes(s.id);
+            const bg = isReq ? 'rgba(251,191,36,0.15)' : 'transparent';
+            const border = isReq ? '1px solid rgba(251,191,36,0.4)' : '1px solid transparent';
+            
+            streamCheckboxes += `
+              <label style="display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text-secondary); cursor: pointer; padding: 4px 6px; border-radius: 4px; background: ${bg}; border: ${border};" title="${isReq ? 'Requested by college admin at onboarding' : ''}">
+                <input type="checkbox" class="col-stream-cb-${col.id}" value="${s.id}" ${isAss ? 'checked' : ''} style="width: 14px; height: 14px; cursor: pointer;">
+                <span style="${isReq ? 'color:#fbbf24; font-weight:bold;' : ''}">${s.name}</span>
+              </label>
+            `;
+          });
+          streamCheckboxes += `</div>`;
+
+          tbody.innerHTML += `
+            <tr style="border-bottom: 1px solid rgba(0,0,0,0.05);">
+              <td style="padding: 12px 0; font-weight: 500;"><i class="fas fa-circle-nodes" style="color: #6366f1; margin-right: 8px;"></i>${col.name}</td>
+              <td style="font-family: monospace;">${col.subdomain}.campusone.app</td>
+              <td><span style="font-weight: 600; color: #8b5cf6;">${col.plan}</span></td>
+              <td><span style="color: var(--success); font-weight: bold;"><i class="fas fa-circle-check"></i> ${col.billing_status}</span></td>
+              <td style="color: var(--text-secondary);">${col.admin_email}</td>
+              <td style="padding: 8px 0;">
+                ${streamCheckboxes}
+                <button onclick="saveCollegeStreams(${col.id})" class="btn-primary" style="padding: 4px 8px; font-size: 10px; margin-top: 6px; width: 100%; justify-content: center; background: linear-gradient(135deg, #ec4899, #8b5cf6); box-shadow: none;">
+                  <i class="fas fa-save"></i> Save Streams
+                </button>
+              </td>
+            </tr>
+          `;
+        });
       }
     }
 
@@ -327,6 +396,47 @@
     function resolveTicket(id) {
       alert(`📬 Ticket #${id} marked as resolved. Auto-notifying college administrators.`);
       loadTickets();
+    }
+
+    async function saveCollegeStreams(collegeId) {
+      const checkboxes = document.querySelectorAll(`.col-stream-cb-${collegeId}:checked`);
+      const assigned = Array.from(checkboxes).map(cb => parseInt(cb.value));
+
+      try {
+        const res = await fetch(`/api/colleges/${collegeId}/assign-streams`, {
+          method: 'POST',
+          headers: authHeaders(),
+          body: JSON.stringify({ assigned_streams: assigned })
+        });
+        const data = await res.json();
+        if (data.success) {
+          showToast('🛡️ Academic streams provisioned successfully!', 'success');
+          loadColleges();
+        } else {
+          showToast('❌ ' + data.message, 'error');
+        }
+      } catch (err) {
+        // Offline cache update
+        showToast('🛡️ [Offline Cache] Streams provisioned successfully!', 'success');
+        let localColleges = JSON.parse(localStorage.getItem('fallback_colleges_cache')) || [];
+        const colIdx = localColleges.findIndex(c => c.id === collegeId);
+        if (colIdx !== -1) {
+          localColleges[colIdx].assigned_streams = assigned;
+          localStorage.setItem('fallback_colleges_cache', JSON.stringify(localColleges));
+        }
+        loadColleges();
+      }
+    }
+
+    function showToast(message, type) {
+      const toast = document.createElement('div');
+      const bg = type === 'success' ? 'rgba(16,185,129,0.15)' : 'rgba(239,68,68,0.15)';
+      const border = type === 'success' ? 'rgba(16,185,129,0.4)' : 'rgba(239,68,68,0.4)';
+      const color = type === 'success' ? '#10b981' : '#f87171';
+      toast.style.cssText = 'position:fixed;bottom:30px;right:30px;z-index:99999;padding:16px 22px;border-radius:12px;font-size:14px;font-weight:600;max-width:400px;box-shadow:0 10px 30px rgba(0,0,0,0.4);background:' + bg + ';border:1px solid ' + border + ';color:' + color + ';';
+      toast.textContent = message;
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 4000);
     }
 
     function saveFeatureFlags() {

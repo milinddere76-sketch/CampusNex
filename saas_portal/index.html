@@ -78,6 +78,46 @@
           </div>
         </div>
 
+        <!-- Requested Academic Streams Checklist (At least one stream compulsory) -->
+        <div style="margin-bottom: 25px;">
+          <label class="form-label" style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+            <span>Requested Academic Fields / Streams <span style="color: var(--danger);">*</span></span>
+            <small style="color: var(--text-muted); font-size: 11px;">(At least 1 choice is compulsory)</small>
+          </label>
+          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; background: rgba(255,255,255,0.02); padding: 15px; border-radius: 12px; border: 1px solid var(--border-color);">
+            <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-secondary); cursor: pointer;">
+              <input type="checkbox" name="onboardStreams" value="1" checked style="width: 16px; height: 16px; cursor: pointer;"> Science (SCI)
+            </label>
+            <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-secondary); cursor: pointer;">
+              <input type="checkbox" name="onboardStreams" value="2" checked style="width: 16px; height: 16px; cursor: pointer;"> Engineering (ENG)
+            </label>
+            <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-secondary); cursor: pointer;">
+              <input type="checkbox" name="onboardStreams" value="3" style="width: 16px; height: 16px; cursor: pointer;"> Commerce (COM)
+            </label>
+            <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-secondary); cursor: pointer;">
+              <input type="checkbox" name="onboardStreams" value="4" style="width: 16px; height: 16px; cursor: pointer;"> Arts & Humanities (ART)
+            </label>
+            <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-secondary); cursor: pointer;">
+              <input type="checkbox" name="onboardStreams" value="5" style="width: 16px; height: 16px; cursor: pointer;"> Law (LAW)
+            </label>
+            <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-secondary); cursor: pointer;">
+              <input type="checkbox" name="onboardStreams" value="6" style="width: 16px; height: 16px; cursor: pointer;"> Medical & Health (MED)
+            </label>
+            <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-secondary); cursor: pointer;">
+              <input type="checkbox" name="onboardStreams" value="7" style="width: 16px; height: 16px; cursor: pointer;"> Agriculture (AGR)
+            </label>
+            <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-secondary); cursor: pointer;">
+              <input type="checkbox" name="onboardStreams" value="8" style="width: 16px; height: 16px; cursor: pointer;"> Management (MGT)
+            </label>
+            <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-secondary); cursor: pointer;">
+              <input type="checkbox" name="onboardStreams" value="9" style="width: 16px; height: 16px; cursor: pointer;"> Design & Arch (DSG)
+            </label>
+            <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-secondary); cursor: pointer;">
+              <input type="checkbox" name="onboardStreams" value="10" style="width: 16px; height: 16px; cursor: pointer;"> Vocational (VOC)
+            </label>
+          </div>
+        </div>
+
         <!-- Custom Welcome Splash & Logo -->
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px;">
           <div>
@@ -231,6 +271,14 @@
       btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Launching Campus...';
       btn.disabled = true;
 
+      const selectedStreams = Array.from(document.querySelectorAll('input[name="onboardStreams"]:checked')).map(cb => parseInt(cb.value));
+      if (selectedStreams.length === 0) {
+        showToast('❌ You must select at least one requested educational stream!', 'error');
+        btn.innerHTML = '<i class="fas fa-rocket"></i> Launch Custom Digital Campus';
+        btn.disabled = false;
+        return;
+      }
+
       const collegeData = {
         name: document.getElementById('collegeName').value,
         subdomain: document.getElementById('subdomain').value.toLowerCase().trim(),
@@ -239,7 +287,8 @@
         secondary_color: document.getElementById('secondaryColor').value,
         admin_email: document.getElementById('adminEmail').value,
         admin_phone: document.getElementById('adminPhone').value,
-        plan: document.getElementById('collegePlan').value
+        plan: document.getElementById('collegePlan').value,
+        requested_streams: selectedStreams
       };
 
       try {
@@ -251,6 +300,7 @@
         
         const resData = await response.json();
         if (resData.success) {
+          localStorage.setItem('active_tenant_subdomain', collegeData.subdomain);
           sessionStorage.setItem('campus_tenant', JSON.stringify({
             name: collegeData.name,
             primary_color: collegeData.primary_color,
@@ -266,6 +316,7 @@
         }
       } catch (err) {
         // Offline simulation fallback
+        localStorage.setItem('active_tenant_subdomain', collegeData.subdomain);
         sessionStorage.setItem('campus_tenant', JSON.stringify({
           name: collegeData.name,
           primary_color: collegeData.primary_color,

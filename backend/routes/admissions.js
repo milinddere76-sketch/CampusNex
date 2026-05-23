@@ -16,6 +16,12 @@ router.post('/apply', async (req, res) => {
     return res.status(400).json({ success: false, message: 'All admission fields are required' });
   }
 
+  // Dynamic Qualification Auto-Validation Criteria
+  const marks = parseFloat(marks_percentage);
+  if (isNaN(marks) || marks < 60.00) {
+    return res.status(400).json({ success: false, message: 'Admission Rejected: Candidate does not satisfy the minimum marks percentage requirement of 60.00%.' });
+  }
+
   try {
     const existing = await db.query('SELECT id FROM public.tenant_admissions WHERE email = $1', [email.toLowerCase().trim()]);
     if (existing.rowCount > 0) {
@@ -70,6 +76,10 @@ router.post('/review/:id', protect, async (req, res) => {
     const application = check.rows[0];
 
     if (status === 'CONFIRMED') {
+      if (req.user.role !== 'PRINCIPAL' && req.user.role !== 'COLLEGE_ADMIN') {
+        return res.status(403).json({ success: false, message: 'Access Denied: Only the Principal Console holds authority to sign and confirm provisional enrollment.' });
+      }
+
       if (!roll_number) {
         return res.status(400).json({ success: false, message: 'Roll number must be assigned to confirm admission' });
       }

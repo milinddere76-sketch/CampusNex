@@ -40,14 +40,16 @@ router.post('/', protect, async (req, res) => {
   }
 
   try {
+    const isApproved = (req.user.role === 'PRINCIPAL' || req.user.role === 'COLLEGE_ADMIN');
     const queryText = `
       INSERT INTO public.tenant_notices (title, content, audience_roles, is_approved)
-      VALUES ($1, $2, $3, FALSE) RETURNING *
+      VALUES ($1, $2, $3, $4) RETURNING *
     `;
     const roles = audience_roles ? (typeof audience_roles === 'string' ? audience_roles : JSON.stringify(audience_roles)) : '["STUDENT"]';
-    const params = [title, content, roles];
+    const params = [title, content, roles, isApproved];
     const result = await db.query(queryText, params);
-    return res.status(201).json({ success: true, message: 'Notice drafted and sent to Principal for approval!', notice: result.rows[0] });
+    const msg = isApproved ? 'Notice published and broadcasted instantly!' : 'Notice drafted and sent to Principal for approval!';
+    return res.status(201).json({ success: true, message: msg, notice: result.rows[0] });
   } catch (err) {
     console.error('Draft notice error:', err);
     return res.status(500).json({ success: false, message: 'Failed to draft notice' });

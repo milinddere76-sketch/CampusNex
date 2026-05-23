@@ -5,10 +5,10 @@
 -- ----------------------------------------------------------------------------
 -- SEED PUBLIC SaaS PLATFORM LEVEL
 -- ----------------------------------------------------------------------------
-INSERT INTO public.colleges (name, subdomain, domain, branding_logo_url, branding_primary_color, branding_secondary_color, admin_email, admin_phone, plan, billing_status)
+INSERT INTO public.colleges (name, subdomain, domain, branding_logo_url, branding_primary_color, branding_secondary_color, admin_email, admin_phone, plan, billing_status, requested_streams, assigned_streams)
 VALUES 
-('Apex Institute of Technology', 'apex', 'apex.campusone.app', 'https://images.unsplash.com/photo-1592280771190-3e2e4d571952?w=100&h=100&fit=crop&q=80', '#4F46E5', '#06B6D4', 'admin@apex.edu', '+1 (555) 019-2834', 'PREMIUM', 'ACTIVE'),
-('Beacon University of Medical Sciences', 'beacon', 'beacon.campusone.app', 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=100&h=100&fit=crop&q=80', '#059669', '#10B981', 'admin@beacon.edu', '+1 (555) 018-9900', 'ENTERPRISE', 'ACTIVE');
+('Apex Institute of Technology', 'apex', 'apex.campusone.app', 'https://images.unsplash.com/photo-1592280771190-3e2e4d571952?w=100&h=100&fit=crop&q=80', '#4F46E5', '#06B6D4', 'admin@apex.edu', '+1 (555) 019-2834', 'PREMIUM', 'ACTIVE', '[1,2]', '[1,2]'),
+('Beacon University of Medical Sciences', 'beacon', 'beacon.campusone.app', 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=100&h=100&fit=crop&q=80', '#059669', '#10B981', 'admin@beacon.edu', '+1 (555) 018-9900', 'ENTERPRISE', 'ACTIVE', '[6]', '[6]');
 
 INSERT INTO public.billing_transactions (college_id, amount, currency, payment_method, transaction_id, status, paid_at)
 VALUES
@@ -51,18 +51,40 @@ VALUES
 ('88888888-8888-8888-8888-888888888888', 'librarian@apex.edu', '$2b$10$T8M2VlE38/a3u.oJ7zN1eO5R9xLwXp/2xN9vE8lPpe2nS80p0S3H.', '+1 (555) 010-0008', 'Albert Bookman', 'LIBRARIAN', 'dev_lib_desk', TRUE),
 ('99999999-9999-9999-9999-999999999999', 'warden@apex.edu', '$2b$10$T8M2VlE38/a3u.oJ7zN1eO5R9xLwXp/2xN9vE8lPpe2nS80p0S3H.', '+1 (555) 010-0009', 'Warden Jenkins', 'HOSTEL_WARDEN', 'dev_warden_tab', TRUE);
 
--- 2. SEED DEPARTMENTS
-INSERT INTO public.tenant_departments (id, name, code, hod_id)
+-- 2. SEED STREAMS
+INSERT INTO public.tenant_streams (id, name, code)
 VALUES
-(1, 'Computer Science & Engineering', 'CSE', '22222222-2222-2222-2222-222222222222'),
-(2, 'Electrical & Electronics Engineering', 'EEE', NULL);
+(1, 'Science', 'SCI'),
+(2, 'Engineering', 'ENG'),
+(3, 'Commerce', 'COM'),
+(4, 'Arts & Humanities', 'ART'),
+(5, 'Law', 'LAW'),
+(6, 'Medical & Health', 'MED'),
+(7, 'Agriculture', 'AGR'),
+(8, 'Management', 'MGT'),
+(9, 'Design & Architecture', 'DSG'),
+(10, 'Vocational', 'VOC');
+
+-- 2b. SEED DEPARTMENTS
+INSERT INTO public.tenant_departments (id, stream_id, name, code, hod_id)
+VALUES
+(1, 2, 'Computer Science & Engineering', 'CSE', '22222222-2222-2222-2222-222222222222'),
+(2, 2, 'Electrical & Electronics Engineering', 'EEE', NULL),
+(3, 1, 'Physics & Applied Sciences', 'PHY', NULL);
 
 -- 3. SEED COURSES
-INSERT INTO public.tenant_courses (id, department_id, name, code, credits)
+INSERT INTO public.tenant_courses (id, department_id, name, code, credits, degree_level)
 VALUES
-(1, 1, 'Data Structures and Algorithms', 'CS-201', 4),
-(2, 1, 'Database Management Systems', 'CS-302', 4),
-(3, 2, 'Signals and Systems', 'EE-204', 3);
+(1, 1, 'Data Structures and Algorithms', 'CS-201', 4, 'UG'),
+(2, 1, 'Database Management Systems', 'CS-302', 4, 'UG'),
+(3, 2, 'Signals and Systems', 'EE-204', 3, 'UG');
+
+-- 3b. SEED SUBJECTS (SYLLABUS & UNITS)
+INSERT INTO public.tenant_subjects (id, course_id, name, code, credits, units, faculty_id)
+VALUES
+(1, 1, 'Programming Fundamentals', 'CS-201-SUB1', 4, '["Syntax & Variables", "Control Flows", "Arrays", "Functions"]'::jsonb, '33333333-3333-3333-3333-333333333333'),
+(2, 1, 'Object-Oriented Design', 'CS-201-SUB2', 4, '["Classes & Objects", "Inheritance", "Polymorphism", "Exception Handling"]'::jsonb, '33333333-3333-3333-3333-333333333333'),
+(3, 2, 'SQL Relational Schemas', 'CS-302-SUB1', 4, '["ER Models", "Normalization (1NF-3NF)", "Joins & Subqueries", "Indexing"]'::jsonb, '22222222-2222-2222-2222-222222222222');
 
 -- 4. SEED SEMESTERS
 INSERT INTO public.tenant_semesters (id, name, start_date, end_date, is_active)
@@ -70,12 +92,13 @@ VALUES
 (1, 'Fall Semester 2026', '2026-08-01', '2026-12-15', TRUE),
 (2, 'Spring Semester 2027', '2027-01-10', '2027-05-20', FALSE);
 
--- 5. SEED CLASSES (TIMETABLE)
-INSERT INTO public.tenant_classes (id, course_id, semester_id, faculty_id, room_number, timetable_day, start_time, end_time)
+-- 5. SEED CLASSES (TIMETABLE WITH SUBJECT ASSIGNMENT)
+INSERT INTO public.tenant_classes (id, course_id, subject_id, semester_id, faculty_id, room_number, timetable_day, start_time, end_time)
 VALUES
-(1, 1, 1, '33333333-3333-3333-3333-333333333333', 'Lab 3, CS Block', 'MONDAY', '09:00:00', '10:30:00'),
-(2, 2, 1, '33333333-3333-3333-3333-333333333333', 'Room 102, CSE Block', 'WEDNESDAY', '11:00:00', '12:30:00'),
-(3, 3, 1, '22222222-2222-2222-2222-222222222222', 'Room 304, EEE Block', 'TUESDAY', '14:00:00', '15:30:00');
+(1, 1, 1, 1, '33333333-3333-3333-3333-333333333333', 'Lab 3, CS Block', 'MONDAY', '09:00:00', '10:30:00'),
+(2, 2, 3, 1, '33333333-3333-3333-3333-333333333333', 'Room 102, CSE Block', 'WEDNESDAY', '11:00:00', '12:30:00'),
+(3, 3, NULL, 1, '22222222-2222-2222-2222-222222222222', 'Room 304, EEE Block', 'TUESDAY', '14:00:00', '15:30:00');
+
 
 -- 6. SEED STUDENTS
 INSERT INTO public.tenant_students (user_id, roll_number, department_id, admission_year, current_semester_id, parent_id, cgpa)
@@ -206,3 +229,10 @@ VALUES
 (2, 'HOD', 10, 'Outstanding candidate. Incomparable experience.'),
 (2, 'PRINCIPAL', 9, 'Highly recommended for immediate appointment.'),
 (1, 'HOD', 8, 'Good coding ability, demonstrated solid AI knowledge.');
+
+-- 22. SEED LEAVES
+INSERT INTO public.tenant_leaves (id, user_id, dates, reason, status)
+VALUES
+(1, '44444444-4444-4444-4444-444444444444', 'May 26th - May 28th', 'Attending National Hackathon Championship', 'PENDING'),
+(2, '33333333-3333-3333-3333-333333333333', 'June 2nd - June 3rd', 'Medical check-up & wellness rest', 'PENDING');
+

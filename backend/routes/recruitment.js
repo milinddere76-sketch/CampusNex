@@ -117,6 +117,10 @@ router.post('/appoint/:id', protect, async (req, res) => {
   const { id } = req.params;
   const { status, remarks } = req.body; // status = 'CONFIRMED' or 'REJECTED'
 
+  if (status === 'CONFIRMED' && req.user.role !== 'PRINCIPAL' && req.user.role !== 'COLLEGE_ADMIN') {
+    return res.status(403).json({ success: false, message: 'Access Denied: Only the Principal Console holds authority to sign official faculty employment contracts.' });
+  }
+
   try {
     const check = await db.query('SELECT * FROM public.tenant_job_applications WHERE id = $1', [parseInt(id)]);
     if (check.rowCount === 0) {

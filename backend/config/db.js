@@ -68,6 +68,9 @@ let mockDb = {
   job_openings: [],
   job_applications: [],
   interview_scores: [],
+  streams: [],
+  subjects: [],
+  leaves: [],
   offline_sync_queue: []
 };
 
@@ -77,6 +80,39 @@ function initMockDb() {
     try {
       mockDb = JSON.parse(fs.readFileSync(fallbackDbPath, 'utf8'));
       console.log('📦 Fallback JSON Database loaded from ' + fallbackDbPath);
+
+      // Robust Dynamic Backfill Logic for existing offline database stores
+      let modified = false;
+      if (mockDb.colleges) {
+        mockDb.colleges.forEach(c => {
+          if (c.id === 1) {
+            if (!c.requested_streams) { c.requested_streams = '[1,2]'; modified = true; }
+            if (!c.assigned_streams) { c.assigned_streams = '[1,2]'; modified = true; }
+          }
+          if (c.id === 2) {
+            if (!c.requested_streams) { c.requested_streams = '[6]'; modified = true; }
+            if (!c.assigned_streams) { c.assigned_streams = '[6]'; modified = true; }
+          }
+        });
+      }
+      if (mockDb.departments) {
+        if (mockDb.departments[0] && mockDb.departments[0].stream_id === undefined) {
+          mockDb.departments[0].stream_id = 2; // Engineering
+          modified = true;
+        }
+        if (mockDb.departments[1] && mockDb.departments[1].stream_id === undefined) {
+          mockDb.departments[1].stream_id = 2; // Engineering
+          modified = true;
+        }
+        if (!mockDb.departments.find(d => d.id === 3)) {
+          mockDb.departments.push({ id: 3, stream_id: 1, name: 'Physics & Applied Sciences', code: 'PHY', hod_id: null });
+          modified = true;
+        }
+      }
+      if (modified) {
+        fs.writeFileSync(fallbackDbPath, JSON.stringify(mockDb, null, 2), 'utf8');
+        console.log('🌱 Fallback database updated with new multi-stream fields.');
+      }
       return;
     } catch (e) {
       console.error('⚠️ Failed to parse fallback DB, re-generating...', e);
@@ -87,8 +123,8 @@ function initMockDb() {
   
   // Colleges
   mockDb.colleges = [
-    { id: 1, name: 'Apex Institute of Technology', subdomain: 'apex', domain: 'apex.campusone.app', branding_logo_url: 'https://images.unsplash.com/photo-1592280771190-3e2e4d571952?w=100&h=100&fit=crop&q=80', branding_primary_color: '#4F46E5', branding_secondary_color: '#06B6D4', admin_email: 'admin@apex.edu', admin_phone: '+1 (555) 019-2834', plan: 'PREMIUM', billing_status: 'ACTIVE', created_at: new Date() },
-    { id: 2, name: 'Beacon University of Medical Sciences', subdomain: 'beacon', domain: 'beacon.campusone.app', branding_logo_url: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=100&h=100&fit=crop&q=80', branding_primary_color: '#059669', branding_secondary_color: '#10B981', admin_email: 'admin@beacon.edu', admin_phone: '+1 (555) 018-9900', plan: 'ENTERPRISE', billing_status: 'ACTIVE', created_at: new Date() }
+    { id: 1, name: 'Apex Institute of Technology', subdomain: 'apex', domain: 'apex.campusone.app', branding_logo_url: 'https://images.unsplash.com/photo-1592280771190-3e2e4d571952?w=100&h=100&fit=crop&q=80', branding_primary_color: '#4F46E5', branding_secondary_color: '#06B6D4', admin_email: 'admin@apex.edu', admin_phone: '+1 (555) 019-2834', plan: 'PREMIUM', billing_status: 'ACTIVE', requested_streams: '[1,2]', assigned_streams: '[1,2]', created_at: new Date() },
+    { id: 2, name: 'Beacon University of Medical Sciences', subdomain: 'beacon', domain: 'beacon.campusone.app', branding_logo_url: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=100&h=100&fit=crop&q=80', branding_primary_color: '#059669', branding_secondary_color: '#10B981', admin_email: 'admin@beacon.edu', admin_phone: '+1 (555) 018-9900', plan: 'ENTERPRISE', billing_status: 'ACTIVE', requested_streams: '[6]', assigned_streams: '[6]', created_at: new Date() }
   ];
 
   // Billing
@@ -119,8 +155,9 @@ function initMockDb() {
 
   // Departments
   mockDb.departments = [
-    { id: 1, name: 'Computer Science & Engineering', code: 'CSE', hod_id: '22222222-2222-2222-2222-222222222222' },
-    { id: 2, name: 'Electrical & Electronics Engineering', code: 'EEE', hod_id: null }
+    { id: 1, stream_id: 2, name: 'Computer Science & Engineering', code: 'CSE', hod_id: '22222222-2222-2222-2222-222222222222' },
+    { id: 2, stream_id: 2, name: 'Electrical & Electronics Engineering', code: 'EEE', hod_id: null },
+    { id: 3, stream_id: 1, name: 'Physics & Applied Sciences', code: 'PHY', hod_id: null }
   ];
 
   // Courses
@@ -268,6 +305,33 @@ function initMockDb() {
     { id: 3, application_id: 1, interviewer_role: 'HOD', score: 8, comments: 'Good coding ability, demonstrated solid AI knowledge.', created_at: new Date() }
   ];
 
+  // Streams Seed
+  mockDb.streams = [
+    { id: 1, name: 'Science', code: 'SCI', created_at: new Date() },
+    { id: 2, name: 'Engineering', code: 'ENG', created_at: new Date() },
+    { id: 3, name: 'Commerce', code: 'COM', created_at: new Date() },
+    { id: 4, name: 'Arts & Humanities', code: 'ART', created_at: new Date() },
+    { id: 5, name: 'Law', code: 'LAW', created_at: new Date() },
+    { id: 6, name: 'Medical & Health', code: 'MED', created_at: new Date() },
+    { id: 7, name: 'Agriculture', code: 'AGR', created_at: new Date() },
+    { id: 8, name: 'Management', code: 'MGT', created_at: new Date() },
+    { id: 9, name: 'Design & Architecture', code: 'DSG', created_at: new Date() },
+    { id: 10, name: 'Vocational', code: 'VOC', created_at: new Date() }
+  ];
+
+  // Subjects Seed
+  mockDb.subjects = [
+    { id: 1, course_id: 1, name: 'Programming Fundamentals', code: 'CS-201-SUB1', credits: 4, units: ["Syntax & Variables", "Control Flows", "Arrays", "Functions"], faculty_id: '33333333-3333-3333-3333-333333333333', created_at: new Date() },
+    { id: 2, course_id: 1, name: 'Object-Oriented Design', code: 'CS-201-SUB2', credits: 4, units: ["Classes & Objects", "Inheritance", "Polymorphism", "Exception Handling"], faculty_id: '33333333-3333-3333-3333-333333333333', created_at: new Date() },
+    { id: 3, course_id: 2, name: 'SQL Relational Schemas', code: 'CS-302-SUB1', credits: 4, units: ["ER Models", "Normalization (1NF-3NF)", "Joins & Subqueries", "Indexing"], faculty_id: '22222222-2222-2222-2222-222222222222', created_at: new Date() }
+  ];
+
+  // Leaves Seed
+  mockDb.leaves = [
+    { id: 1, user_id: '44444444-4444-4444-4444-444444444444', dates: 'May 26th - May 28th', reason: 'Attending National Hackathon Championship', status: 'PENDING', created_at: new Date() },
+    { id: 2, user_id: '33333333-3333-3333-3333-333333333333', dates: 'June 2nd - June 3rd', reason: 'Medical check-up & wellness rest', status: 'PENDING', created_at: new Date() }
+  ];
+
   mockDb.offline_sync_queue = [];
 
   saveMockDb();
@@ -404,7 +468,7 @@ const mockQuery = async (text, params = []) => {
     }
     // 6. INSERT INTO public.colleges
     else if (normText.includes('insert into public.colleges')) {
-      // params: [name, subdomain, logo, primary_color, secondary_color, admin_email, admin_phone, plan]
+      // params: [name, subdomain, logo, primary_color, secondary_color, admin_email, admin_phone, plan, requested_streams, assigned_streams]
       const newCol = {
         id: mockDb.colleges.length + 1,
         name: params[0],
@@ -417,11 +481,24 @@ const mockQuery = async (text, params = []) => {
         admin_phone: params[6],
         plan: params[7] || 'FREE_TRIAL',
         billing_status: 'ACTIVE',
+        requested_streams: params[8] || '[]',
+        assigned_streams: params[9] || '[]',
         created_at: new Date()
       };
       mockDb.colleges.push(newCol);
       saveMockDb();
       result.rows = [newCol];
+    }
+    // 6b. UPDATE public.colleges SET assigned_streams
+    else if (normText.includes('update public.colleges set assigned_streams =')) {
+      const assigned = params[0];
+      const id = parseInt(params[1]);
+      const college = mockDb.colleges.find(c => c.id === id);
+      if (college) {
+        college.assigned_streams = assigned;
+        saveMockDb();
+        result.rows = [college];
+      }
     }
     // 7. INSERT INTO public.tenant_users
     else if (normText.includes('insert into public.tenant_users')) {
@@ -656,6 +733,58 @@ const mockQuery = async (text, params = []) => {
       mockDb.offline_sync_queue.push(newSync);
       saveMockDb();
       result.rows = [newSync];
+    }
+    // 14a. INSERT INTO public.tenant_streams
+    else if (normText.includes('insert into public.tenant_streams')) {
+      const newStream = {
+        id: mockDb.streams.length + 1,
+        name: params[0],
+        code: params[1],
+        created_at: new Date()
+      };
+      mockDb.streams.push(newStream);
+      saveMockDb();
+      result.rows = [newStream];
+    }
+    // 14b. INSERT INTO public.tenant_subjects
+    else if (normText.includes('insert into public.tenant_subjects')) {
+      const newSubject = {
+        id: mockDb.subjects.length + 1,
+        course_id: parseInt(params[0]),
+        name: params[1],
+        code: params[2],
+        credits: parseInt(params[3] || 4),
+        units: typeof params[4] === 'string' ? JSON.parse(params[4]) : (params[4] || []),
+        faculty_id: params[5] || null,
+        created_at: new Date()
+      };
+      mockDb.subjects.push(newSubject);
+      saveMockDb();
+      result.rows = [newSubject];
+    }
+    // 14c. INSERT INTO public.tenant_leaves
+    else if (normText.includes('insert into public.tenant_leaves')) {
+      const newLeave = {
+        id: mockDb.leaves.length + 1,
+        user_id: params[0],
+        dates: params[1],
+        reason: params[2],
+        status: 'PENDING',
+        created_at: new Date()
+      };
+      mockDb.leaves.push(newLeave);
+      saveMockDb();
+      result.rows = [newLeave];
+    }
+    // 14d. UPDATE public.tenant_leaves
+    else if (normText.includes('update public.tenant_leaves')) {
+      const [status, id] = params;
+      const leaveObj = mockDb.leaves.find(l => l.id === parseInt(id));
+      if (leaveObj) {
+        leaveObj.status = status;
+      }
+      saveMockDb();
+      result.rows = [];
     }
     // 15. Catch all generic selects for demo dashboards
     else {

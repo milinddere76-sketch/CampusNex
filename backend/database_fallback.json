@@ -12,7 +12,9 @@
       "admin_phone": "+1 (555) 019-2834",
       "plan": "PREMIUM",
       "billing_status": "ACTIVE",
-      "created_at": "2026-05-22T14:24:54.841Z"
+      "created_at": "2026-05-22T14:24:54.841Z",
+      "requested_streams": "[1,2]",
+      "assigned_streams": "[1,2]"
     },
     {
       "id": 2,
@@ -26,7 +28,9 @@
       "admin_phone": "+1 (555) 018-9900",
       "plan": "ENTERPRISE",
       "billing_status": "ACTIVE",
-      "created_at": "2026-05-22T14:24:54.841Z"
+      "created_at": "2026-05-22T14:24:54.841Z",
+      "requested_streams": "[6]",
+      "assigned_streams": "[6]"
     }
   ],
   "billing_transactions": [
@@ -148,12 +152,21 @@
       "id": 1,
       "name": "Computer Science & Engineering",
       "code": "CSE",
-      "hod_id": "22222222-2222-2222-2222-222222222222"
+      "hod_id": "22222222-2222-2222-2222-222222222222",
+      "stream_id": 2
     },
     {
       "id": 2,
       "name": "Electrical & Electronics Engineering",
       "code": "EEE",
+      "hod_id": null,
+      "stream_id": 2
+    },
+    {
+      "id": 3,
+      "stream_id": 1,
+      "name": "Physics & Applied Sciences",
+      "code": "PHY",
       "hod_id": null
     }
   ],

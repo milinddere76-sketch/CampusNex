@@ -19,6 +19,8 @@ CREATE TABLE IF NOT EXISTS public.colleges (
     admin_phone VARCHAR(50),
     plan VARCHAR(50) DEFAULT 'FREE_TRIAL', -- FREE_TRIAL, BASIC, PREMIUM, ENTERPRISE
     billing_status VARCHAR(50) DEFAULT 'ACTIVE', -- ACTIVE, PAST_DUE, SUSPENDED
+    requested_streams VARCHAR(255) DEFAULT '[]', -- JSON array of requested stream IDs
+    assigned_streams VARCHAR(255) DEFAULT '[]', -- JSON array of active stream IDs approved by Super-Admin
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
@@ -71,8 +73,16 @@ CREATE TABLE IF NOT EXISTS public.tenant_users (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE IF NOT EXISTS public.tenant_streams (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    code VARCHAR(50) UNIQUE NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE TABLE IF NOT EXISTS public.tenant_departments (
     id SERIAL PRIMARY KEY,
+    stream_id INT REFERENCES public.tenant_streams(id) ON DELETE SET NULL,
     name VARCHAR(255) NOT NULL,
     code VARCHAR(50) UNIQUE NOT NULL,
     hod_id UUID REFERENCES public.tenant_users(id) ON DELETE SET NULL,
@@ -85,6 +95,18 @@ CREATE TABLE IF NOT EXISTS public.tenant_courses (
     name VARCHAR(255) NOT NULL,
     code VARCHAR(50) UNIQUE NOT NULL,
     credits INT DEFAULT 4,
+    degree_level VARCHAR(50) DEFAULT 'UG', -- UG, PG, PHD, DIPLOMA, CERTIFICATE
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS public.tenant_subjects (
+    id SERIAL PRIMARY KEY,
+    course_id INT REFERENCES public.tenant_courses(id) ON DELETE CASCADE,
+    name VARCHAR(255) NOT NULL,
+    code VARCHAR(50) UNIQUE NOT NULL,
+    credits INT DEFAULT 4,
+    units JSONB, -- JSON array of strings representing syllabus units
+    faculty_id UUID REFERENCES public.tenant_users(id) ON DELETE SET NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -99,6 +121,7 @@ CREATE TABLE IF NOT EXISTS public.tenant_semesters (
 CREATE TABLE IF NOT EXISTS public.tenant_classes (
     id SERIAL PRIMARY KEY,
     course_id INT REFERENCES public.tenant_courses(id) ON DELETE CASCADE,
+    subject_id INT REFERENCES public.tenant_subjects(id) ON DELETE SET NULL,
     semester_id INT REFERENCES public.tenant_semesters(id) ON DELETE CASCADE,
     faculty_id UUID REFERENCES public.tenant_users(id) ON DELETE SET NULL,
     room_number VARCHAR(50),
@@ -106,6 +129,7 @@ CREATE TABLE IF NOT EXISTS public.tenant_classes (
     start_time TIME NOT NULL,
     end_time TIME NOT NULL
 );
+
 
 CREATE TABLE IF NOT EXISTS public.tenant_students (
     user_id UUID PRIMARY KEY REFERENCES public.tenant_users(id) ON DELETE CASCADE,
@@ -379,6 +403,15 @@ CREATE TABLE IF NOT EXISTS public.tenant_interview_scores (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE IF NOT EXISTS public.tenant_leaves (
+    id SERIAL PRIMARY KEY,
+    user_id UUID REFERENCES public.tenant_users(id) ON DELETE CASCADE,
+    dates VARCHAR(100) NOT NULL,
+    reason TEXT NOT NULL,
+    status VARCHAR(50) DEFAULT 'PENDING', -- PENDING, APPROVED, REJECTED
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
 -- CREATE ESSENTIAL SCOPE INDEXES FOR HIGH PERFORMANCE
 CREATE INDEX IF NOT EXISTS idx_tenant_users_email ON public.tenant_users(email);
 CREATE INDEX IF NOT EXISTS idx_tenant_students_parent ON public.tenant_students(parent_id);
@@ -387,4 +420,7 @@ CREATE INDEX IF NOT EXISTS idx_tenant_sync_status ON public.tenant_offline_sync_
 CREATE INDEX IF NOT EXISTS idx_tenant_chat_sender_receiver ON public.tenant_chat_messages(sender_id, receiver_id);
 CREATE INDEX IF NOT EXISTS idx_tenant_admissions_email ON public.tenant_admissions(email);
 CREATE INDEX IF NOT EXISTS idx_tenant_job_apps_opening ON public.tenant_job_applications(job_opening_id);
+CREATE INDEX IF NOT EXISTS idx_tenant_leaves_user ON public.tenant_leaves(user_id);
+CREATE INDEX IF NOT EXISTS idx_tenant_leaves_status ON public.tenant_leaves(status);
+
 
