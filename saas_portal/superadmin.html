@@ -303,12 +303,12 @@
             `;
           });
           
-          document.getElementById('arrValue').textContent = '$' + totalArr.toLocaleString();
+          document.getElementById('arrValue').textContent = '₹' + totalArr.toLocaleString();
         }
       } catch (err) {
         // Fallback local registries mock
         document.getElementById('totalColleges').textContent = '2';
-        document.getElementById('arrValue').textContent = '$80,400';
+        document.getElementById('arrValue').textContent = '₹80,400';
 
         // Load colleges from mock cache if exists, otherwise generate defaults
         let localColleges = JSON.parse(localStorage.getItem('fallback_colleges_cache'));

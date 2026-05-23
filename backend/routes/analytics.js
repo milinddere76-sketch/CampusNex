@@ -105,10 +105,10 @@ router.get('/dropout-prediction', protect, async (req, res) => {
 
       if (outstandingFees > 2000) {
         riskScore += 30;
-        riskFactors.push(`High pending fee arrears ($${outstandingFees.toFixed(2)})`);
+        riskFactors.push(`High pending fee arrears (₹${outstandingFees.toFixed(2)})`);
       } else if (outstandingFees > 0) {
         riskScore += 10;
-        riskFactors.push(`Outstanding fee balance of $${outstandingFees.toFixed(2)}`);
+        riskFactors.push(`Outstanding fee balance of ₹${outstandingFees.toFixed(2)}`);
       }
 
       if (parseFloat(student.cgpa) < 2.5) {

@@ -225,28 +225,28 @@ router.get('/print', async (req, res) => {
             <div>
               <h4 style="border-bottom: 2px solid #e2e8f0; padding-bottom: 6px; margin-bottom: 12px; color: #0f766e;">EARNINGS</h4>
               <table style="width: 100%;">
-                <tr style="height: 30px;"><td>Basic Pay</td><td style="text-align: right; font-weight: bold;">$3,200.00</td></tr>
-                <tr style="height: 30px;"><td>House Rent Allowance (HRA)</td><td style="text-align: right; font-weight: bold;">$640.00</td></tr>
-                <tr style="height: 30px;"><td>Dearness Allowance (DA)</td><td style="text-align: right; font-weight: bold;">$320.00</td></tr>
-                <tr style="height: 30px;"><td>Special Research Grant</td><td style="text-align: right; font-weight: bold;">$150.00</td></tr>
-                <tr style="height: 30px; border-top: 1px solid #cbd5e1;"><td style="font-weight: bold;">Total Earnings (A)</td><td style="text-align: right; font-weight: bold; color: #0f766e;">$4,310.00</td></tr>
+                <tr style="height: 30px;"><td>Basic Pay</td><td style="text-align: right; font-weight: bold;">₹3,200.00</td></tr>
+                <tr style="height: 30px;"><td>House Rent Allowance (HRA)</td><td style="text-align: right; font-weight: bold;">₹640.00</td></tr>
+                <tr style="height: 30px;"><td>Dearness Allowance (DA)</td><td style="text-align: right; font-weight: bold;">₹320.00</td></tr>
+                <tr style="height: 30px;"><td>Special Research Grant</td><td style="text-align: right; font-weight: bold;">₹150.00</td></tr>
+                <tr style="height: 30px; border-top: 1px solid #cbd5e1;"><td style="font-weight: bold;">Total Earnings (A)</td><td style="text-align: right; font-weight: bold; color: #0f766e;">₹4,310.00</td></tr>
               </table>
             </div>
             <div>
               <h4 style="border-bottom: 2px solid #e2e8f0; padding-bottom: 6px; margin-bottom: 12px; color: #b91c1c;">DEDUCTIONS</h4>
               <table style="width: 100%;">
-                <tr style="height: 30px;"><td>Provident Fund (PF)</td><td style="text-align: right; font-weight: bold;">$384.00</td></tr>
-                <tr style="height: 30px;"><td>Professional Tax</td><td style="text-align: right; font-weight: bold;">$25.00</td></tr>
-                <tr style="height: 30px;"><td>Income Tax TDS</td><td style="text-align: right; font-weight: bold;">$310.00</td></tr>
-                <tr style="height: 30px;"><td>Academic Advance Repay</td><td style="text-align: right; font-weight: bold;">$0.00</td></tr>
-                <tr style="height: 30px; border-top: 1px solid #cbd5e1;"><td style="font-weight: bold;">Total Deductions (B)</td><td style="text-align: right; font-weight: bold; color: #b91c1c;">$719.00</td></tr>
+                <tr style="height: 30px;"><td>Provident Fund (PF)</td><td style="text-align: right; font-weight: bold;">₹384.00</td></tr>
+                <tr style="height: 30px;"><td>Professional Tax</td><td style="text-align: right; font-weight: bold;">₹25.00</td></tr>
+                <tr style="height: 30px;"><td>Income Tax TDS</td><td style="text-align: right; font-weight: bold;">₹310.00</td></tr>
+                <tr style="height: 30px;"><td>Academic Advance Repay</td><td style="text-align: right; font-weight: bold;">₹0.00</td></tr>
+                <tr style="height: 30px; border-top: 1px solid #cbd5e1;"><td style="font-weight: bold;">Total Deductions (B)</td><td style="text-align: right; font-weight: bold; color: #b91c1c;">₹719.00</td></tr>
               </table>
             </div>
           </div>
           
           <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 20px; display: flex; justify-content: space-between; align-items: center; font-size: 16px; font-weight: bold; color: #166534;">
             <span>NET DISBURSED AMOUNT (A - B):</span>
-            <span>$3,591.00</span>
+            <span>₹3,591.00</span>
           </div>
           
           <div style="text-align: center; margin-top: 40px; font-size: 11px; color: #94a3b8; border-top: 1px solid #e2e8f0; padding-top: 20px;">

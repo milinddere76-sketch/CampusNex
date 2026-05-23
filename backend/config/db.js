@@ -300,7 +300,7 @@ function initMockDb() {
   // Notices
   mockDb.notices = [
     { id: 1, title: 'Midterm Review Seminar', content: 'Prof Marcus is conducting a DSA review lecture on Binary Search Tree rebalancing algorithms this Friday evening at 5 PM in Room 102. Attendance is highly recommended.', audience_roles: ['STUDENT'], attachment_url: 'https://apex.campusone.app/notices/dsa_session.pdf', created_at: new Date() },
-    { id: 2, title: 'Annual Cultural Tech Fest 2026', content: 'Registrations are now officially open for ApexTechFest 2026. Cash rewards up to $15,000 for standard hackathon submissions.', audience_roles: ['STUDENT', 'FACULTY', 'COLLEGE_ADMIN'], attachment_url: null, created_at: new Date() }
+    { id: 2, title: 'Annual Cultural Tech Fest 2026', content: 'Registrations are now officially open for ApexTechFest 2026. Cash rewards up to ₹15,000 for standard hackathon submissions.', audience_roles: ['STUDENT', 'FACULTY', 'COLLEGE_ADMIN'], attachment_url: null, created_at: new Date() }
   ];
 
   // Chats

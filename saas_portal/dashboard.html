@@ -585,12 +585,12 @@
           <div style="background: rgba(255,255,255,0.02); padding: 15px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.05); text-align: center;">
             <div style="font-size: 11px; color: var(--text-secondary); text-transform: uppercase;">Engineering (ENG)</div>
             <div style="font-size: 20px; font-weight: bold; margin-top: 5px; color: #60a5fa;">88.5% Att.</div>
-            <div style="font-size: 10px; color: #10b981; margin-top: 4px;"><i class="fas fa-arrow-trend-up"></i> $18k Avg Package</div>
+            <div style="font-size: 10px; color: #10b981; margin-top: 4px;"><i class="fas fa-arrow-trend-up"></i> ₹18k Avg Package</div>
           </div>
           <div style="background: rgba(255,255,255,0.02); padding: 15px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.05); text-align: center;">
             <div style="font-size: 11px; color: var(--text-secondary); text-transform: uppercase;">Commerce (COM)</div>
             <div style="font-size: 20px; font-weight: bold; margin-top: 5px; color: #ec4899;">91.0% Att.</div>
-            <div style="font-size: 10px; color: #10b981; margin-top: 4px;"><i class="fas fa-arrow-trend-up"></i> $4,500 Invoiced</div>
+            <div style="font-size: 10px; color: #10b981; margin-top: 4px;"><i class="fas fa-arrow-trend-up"></i> ₹4,500 Invoiced</div>
           </div>
           <div style="background: rgba(255,255,255,0.02); padding: 15px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.05); text-align: center;">
             <div style="font-size: 11px; color: var(--text-secondary); text-transform: uppercase;">Arts & Humanities</div>
@@ -1055,7 +1055,7 @@
           </div>
           <div class="glass-card" style="margin-bottom:0; padding:16px; border-left: 3px solid #10b981;">
             <span style="font-size:11px; color:var(--text-secondary);">Annual Recurring Revenue</span>
-            <div style="font-size:24px; font-weight:bold; margin-top:5px; color:#10b981;">$80,400.00</div>
+            <div style="font-size:24px; font-weight:bold; margin-top:5px; color:#10b981;">₹80,400.00</div>
           </div>
           <div class="glass-card" style="margin-bottom:0; padding:16px; border-left: 3px solid #ef4444;">
             <span style="font-size:11px; color:var(--text-secondary);">Open Tickets</span>
@@ -2261,8 +2261,8 @@
               <tr>
                 <td><strong>${f.title}</strong></td>
                 <td>${f.billing_category}</td>
-                <td><strong>$${parseFloat(f.amount_due).toFixed(2)}</strong></td>
-                <td>$${parseFloat(f.amount_paid).toFixed(2)}</td>
+                <td><strong>₹${parseFloat(f.amount_due).toFixed(2)}</strong></td>
+                <td>₹${parseFloat(f.amount_paid).toFixed(2)}</td>
                 <td>${f.due_date}</td>
                 <td><span class="badge ${f.status === 'PAID' ? 'badge-success' : 'badge-warning'}">${f.status}</span></td>
                 <td>${payBtn}</td>
@@ -2275,8 +2275,8 @@
           <tr>
             <td><strong>Tuition Fees - Term 1</strong></td>
             <td>TUITION</td>
-            <td><strong>$4500.00</strong></td>
-            <td>$4500.00</td>
+            <td><strong>₹4500.00</strong></td>
+            <td>₹4500.00</td>
             <td>2026-05-01</td>
             <td><span class="badge badge-success">PAID</span></td>
             <td><span style="color:#10b981; font-weight:bold;"><i class="fas fa-circle-check"></i> Disbursed</span></td>
@@ -2284,11 +2284,11 @@
           <tr>
             <td><strong>Hostel Mess Charges</strong></td>
             <td>HOSTEL</td>
-            <td><strong>$800.00</strong></td>
-            <td>$300.00</td>
+            <td><strong>₹800.00</strong></td>
+            <td>₹300.00</td>
             <td>2026-05-30</td>
             <td><span class="badge badge-warning">PARTIAL</span></td>
-            <td><button onclick="alert('🟢 Payment gateway connected: Paid $500.00 outstanding mess invoice!')" class="btn-primary" style="padding:6px 12px; font-size:11px;"><i class="fas fa-credit-card"></i> Pay Invoice</button></td>
+            <td><button onclick="alert('🟢 Payment gateway connected: Paid ₹500.00 outstanding mess invoice!')" class="btn-primary" style="padding:6px 12px; font-size:11px;"><i class="fas fa-credit-card"></i> Pay Invoice</button></td>
           </tr>
         `;
       }
@@ -2455,12 +2455,12 @@
       
       const filter = document.getElementById('analyticsStreamFilter').value;
       const metrics = [
-        { code: 'SCI', name: 'Science (SCI)', enrolled: 124, attendance: '92.4%', results: '8.4 GPA', revenue: '$14,500.00', placements: 42 },
-        { code: 'ENG', name: 'Engineering (ENG)', enrolled: 310, attendance: '88.5%', results: '7.9 GPA', revenue: '$45,000.00', placements: 95 },
-        { code: 'COM', name: 'Commerce (COM)', enrolled: 185, attendance: '91.0%', results: '8.1 GPA', revenue: '$22,800.00', placements: 28 },
-        { code: 'ART', name: 'Arts & Humanities (ART)', enrolled: 98, attendance: '94.2%', results: '8.6 GPA', revenue: '$9,200.00', placements: 12 },
-        { code: 'LAW', name: 'Law (LAW)', enrolled: 64, attendance: '85.6%', results: '7.8 GPA', revenue: '$11,400.00', placements: 8 },
-        { code: 'MED', name: 'Medical & Health (MED)', enrolled: 140, attendance: '95.0%', results: '8.9 GPA', revenue: '$62,000.00', placements: 15 }
+        { code: 'SCI', name: 'Science (SCI)', enrolled: 124, attendance: '92.4%', results: '8.4 GPA', revenue: '₹14,500.00', placements: 42 },
+        { code: 'ENG', name: 'Engineering (ENG)', enrolled: 310, attendance: '88.5%', results: '7.9 GPA', revenue: '₹45,000.00', placements: 95 },
+        { code: 'COM', name: 'Commerce (COM)', enrolled: 185, attendance: '91.0%', results: '8.1 GPA', revenue: '₹22,800.00', placements: 28 },
+        { code: 'ART', name: 'Arts & Humanities (ART)', enrolled: 98, attendance: '94.2%', results: '8.6 GPA', revenue: '₹9,200.00', placements: 12 },
+        { code: 'LAW', name: 'Law (LAW)', enrolled: 64, attendance: '85.6%', results: '7.8 GPA', revenue: '₹11,400.00', placements: 8 },
+        { code: 'MED', name: 'Medical & Health (MED)', enrolled: 140, attendance: '95.0%', results: '8.9 GPA', revenue: '₹62,000.00', placements: 15 }
       ];
 
       // Filter only metric entries belonging to active college's assigned stream list!
