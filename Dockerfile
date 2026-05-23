@@ -17,7 +17,7 @@ FROM node:18-alpine
 
 # Set build and runtime environment
 ENV NODE_ENV=production
-ENV PORT=5000
+ENV PORT=8080
 
 WORKDIR /usr/src/app
 
@@ -34,7 +34,7 @@ COPY saas_portal/ ./saas_portal/
 COPY database/ ./database/
 
 # Expose HTTP, WebSockets, and REST API port
-EXPOSE 5000
+EXPOSE 8080
 
 # Execute server process
 CMD ["node", "backend/server.js"]
