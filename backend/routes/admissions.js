@@ -54,7 +54,7 @@ router.get('/all', protect, async (req, res) => {
   }
 });
 
-// @desc    Review Admission (Approve/Reject/Confirm Roll & Class)
+// @desc    Review Admission (Approve/Reject/Confirm Roll & Class/Approve for Merit List)
 // @route   POST /api/admissions/review/:id
 // @access  Private (College Admins, Principals)
 router.post('/review/:id', protect, async (req, res) => {
@@ -100,10 +100,57 @@ router.post('/review/:id', protect, async (req, res) => {
           'INSERT INTO public.tenant_students (user_id, roll_number, department_id, admission_year, current_semester_id) VALUES ($1, $2, $3, $4, $5)',
           [userId, roll_number, 1, new Date().getFullYear(), 1]
         );
+      } else {
+        userId = userCheck.rows[0].id;
+        // Update temporary merit roll number to finalized roll number
+        await db.query('UPDATE public.tenant_students SET roll_number = $1 WHERE user_id = $2', [roll_number, userId]);
       }
 
       return res.status(200).json({ success: true, message: `Admission confirmed. Assigned Roll Number [${roll_number}]` });
-    } else {
+    } 
+    else if (status === 'MERIT_LIST') {
+      // 1. Update Admission Application to MERIT_LIST status
+      await db.query(
+        'UPDATE public.tenant_admissions SET status = $1 WHERE id = $2',
+        [status, parseInt(id)]
+      );
+
+      // 2. Automatically create temporary student user and student record so accounts can collect fees
+      const userCheck = await db.query('SELECT id FROM public.tenant_users WHERE email = $1', [application.email]);
+      let userId;
+
+      if (userCheck.rowCount === 0) {
+        const { v4: uuidv4 } = require('uuid');
+        const bcrypt = require('bcryptjs');
+        userId = uuidv4();
+        const salt = await bcrypt.genSalt(10);
+        const hashedPw = await bcrypt.hash('password123', salt);
+
+        await db.query(
+          'INSERT INTO public.tenant_users (id, email, password_hash, phone, full_name, role) VALUES ($1, $2, $3, $4, $5, $6)',
+          [userId, application.email, hashedPw, application.mobile, application.full_name, 'STUDENT']
+        );
+
+        const meritRoll = `APEX-2026-MERIT-${id}`;
+        await db.query(
+          'INSERT INTO public.tenant_students (user_id, roll_number, department_id, admission_year, current_semester_id) VALUES ($1, $2, $3, $4, $5)',
+          [userId, meritRoll, 1, new Date().getFullYear(), 1]
+        );
+
+        // 3. Create a Tuition Fee invoice of $4500.00 in tenant_fees for Accounts department collections
+        const dueDate = new Date();
+        dueDate.setDate(dueDate.getDate() + 15);
+        const dueDateStr = dueDate.toISOString().split('T')[0];
+
+        await db.query(
+          "INSERT INTO public.tenant_fees (student_id, title, amount_due, amount_paid, status, billing_category, due_date) VALUES ($1, $2, $3, $4, $5, $6, $7)",
+          [userId, 'Tuition Fees - Merit List Admission', 4500.00, 0.00, 'UNPAID', 'TUITION', dueDateStr]
+        );
+      }
+
+      return res.status(200).json({ success: true, message: `Application approved for Merit List. Sent tuition invoice to Accounts department.` });
+    }
+    else {
       // Direct Status Update (e.g., REVIEW, DOCUMENT_VERIFICATION, REJECTED)
       await db.query('UPDATE public.tenant_admissions SET status = $1 WHERE id = $2', [status, parseInt(id)]);
       return res.status(200).json({ success: true, message: `Application status updated to [${status}]` });
@@ -111,6 +158,21 @@ router.post('/review/:id', protect, async (req, res) => {
   } catch (err) {
     console.error('Review application error:', err);
     return res.status(500).json({ success: false, message: 'Failed to update application review' });
+  }
+});
+
+// @desc    Get Automated College Merit List (Sorted by marks percentage descending)
+// @route   GET /api/admissions/merit-list
+// @access  Public
+router.get('/merit-list', async (req, res) => {
+  try {
+    const result = await db.query(
+      "SELECT id, full_name, marks_percentage, course_id, status, roll_number FROM public.tenant_admissions WHERE status IN ('MERIT_LIST', 'CONFIRMED') ORDER BY marks_percentage DESC"
+    );
+    return res.status(200).json({ success: true, merit_list: result.rows });
+  } catch (err) {
+    console.error('Fetch merit list error:', err);
+    return res.status(500).json({ success: false, message: 'Failed to generate merit list' });
   }
 });
 

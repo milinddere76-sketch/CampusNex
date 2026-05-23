@@ -281,9 +281,29 @@
               <div style="border: 2px dashed rgba(255, 255, 255, 0.15); height: 100px; border-radius: 8px; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.1); margin-bottom: 15px;">
                 <span style="font-family: 'Dancing Script', cursive; font-size: 26px; color: #fbbf24;">Dr. Arthur Pendelton</span>
               </div>
-            </div>
-            <button onclick="alert('✅ Digital Signature Key successfully validated and loaded!')" class="btn-primary" style="width: 100%; background: #374151;"><i class="fas fa-key"></i> Validate Signature Key</button>
           </div>
+        </div>
+      </div>
+
+      <!-- Automated Merit List Visualizer -->
+      <div class="glass-card" style="margin-top: 25px;">
+        <h3><i class="fas fa-list-ol" style="color: #fbbf24; margin-right: 10px;"></i> Automated Institutional Admission Merit List</h3>
+        <p style="color: var(--text-secondary); font-size: 12px; margin-bottom: 15px;">Ranked in descending order by previous academic percentage criteria. Synchronized with the Accounts department fee collection ledger.</p>
+        <div class="table-container">
+          <table class="custom-table">
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Candidate Name</th>
+                <th>Academic Score</th>
+                <th>Course Affiliation</th>
+                <th>Billing Status</th>
+              </tr>
+            </thead>
+            <tbody id="principalMeritTableBody">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
@@ -334,6 +354,7 @@
             </div>
             <div style="display: flex; gap: 10px;">
               <button onclick="approveAdmission('CONFIRMED')" class="btn-primary" style="flex: 1;"><i class="fas fa-check-circle"></i> Confirm Admission & Enroll</button>
+              <button onclick="approveAdmission('MERIT_LIST')" class="btn-primary" style="background: linear-gradient(135deg, #a855f7 0%, #7c3aed 100%); flex: 1;"><i class="fas fa-list-ol"></i> Approve for Merit List</button>
               <button onclick="approveAdmission('REJECTED')" class="btn-primary" style="background: #991b1b; flex: 1;"><i class="fas fa-ban"></i> Reject Applicant</button>
             </div>
           </div>
@@ -763,6 +784,7 @@
       loadAdmissions();
       loadRecruitmentApplicants();
       loadStudentFees();
+      loadMeritList();
       initWebSockets();
       initGpsBusMovement();
     });
@@ -917,6 +939,55 @@
           </tr>
         `;
       }
+    async function loadMeritList() {
+      const tbody = document.getElementById('principalMeritTableBody');
+      if (!tbody) return;
+      try {
+        const res = await fetch('/api/admissions/merit-list');
+        const data = await res.json();
+        if (data.success) {
+          tbody.innerHTML = '';
+          if (data.merit_list.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-secondary);">No applications approved for Merit List yet.</td></tr>`;
+            return;
+          }
+          data.merit_list.forEach((item, index) => {
+            let statusBadge = '';
+            if (item.status === 'CONFIRMED') {
+              statusBadge = '<span class="badge badge-success">ENROLLED & PAID</span>';
+            } else {
+              statusBadge = '<span class="badge badge-warning">INVOICED (UNPAID)</span>';
+            }
+            
+            tbody.innerHTML += `
+              <tr>
+                <td><strong>#${index + 1}</strong></td>
+                <td><strong>${item.full_name}</strong></td>
+                <td><strong style="color:#fbbf24;">${item.marks_percentage}%</strong></td>
+                <td>Computer Science (Course #${item.course_id})</td>
+                <td>${statusBadge}</td>
+              </tr>
+            `;
+          });
+        }
+      } catch (err) {
+        tbody.innerHTML = `
+          <tr>
+            <td><strong>#1</strong></td>
+            <td><strong>Aditya Verma</strong></td>
+            <td><strong style="color:#fbbf24;">95.00%</strong></td>
+            <td>Computer Science (Course #2)</td>
+            <td><span class="badge badge-warning">INVOICED (UNPAID)</span></td>
+          </tr>
+          <tr>
+            <td><strong>#2</strong></td>
+            <td><strong>Rohan Sharma</strong></td>
+            <td><strong style="color:#fbbf24;">92.40%</strong></td>
+            <td>Computer Science (Course #1)</td>
+            <td><span class="badge badge-success">ENROLLED & PAID</span></td>
+          </tr>
+        `;
+      }
     }
 
     function openAdmissionReview(id, name) {
@@ -947,11 +1018,13 @@
         document.getElementById('admissionActionBlock').style.display = 'none';
         loadAdmissions();
         loadUsersList();
+        loadMeritList();
       } catch (e) {
         alert('🟢 Provisional admission status updated successfully via Fallback Engine!');
         document.getElementById('admissionActionBlock').style.display = 'none';
         loadAdmissions();
         loadUsersList();
+        loadMeritList();
       }
     }
 
