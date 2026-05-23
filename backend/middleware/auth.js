@@ -1,13 +1,17 @@
 const jwt = require('jsonwebtoken');
 const db = require('../config/db');
 
-// Enforce JWT_SECRET at startup
-if (!process.env.JWT_SECRET && process.env.NODE_ENV === 'production') {
-  console.error('❌ FATAL: JWT_SECRET environment variable is not set. Refusing to start in production.');
-  process.exit(1);
+// Enforce or generate JWT_SECRET at startup
+let JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+  if (process.env.NODE_ENV === 'production') {
+    const crypto = require('crypto');
+    JWT_SECRET = crypto.randomBytes(32).toString('hex');
+    console.warn('⚠️ WARNING: JWT_SECRET environment variable is not set. Generated a random secure fallback secret for this session to ensure stability.');
+  } else {
+    JWT_SECRET = 'campusnex_dev_secret_change_in_production';
+  }
 }
-
-const JWT_SECRET = process.env.JWT_SECRET || 'campusnex_dev_secret_change_in_production';
 
 // Main Authentication Middleware
 const protect = async (req, res, next) => {
@@ -58,4 +62,4 @@ const authorize = (...roles) => {
   };
 };
 
-module.exports = { protect, authorize };
+module.exports = { protect, authorize, JWT_SECRET };

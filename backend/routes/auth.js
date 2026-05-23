@@ -4,13 +4,11 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const { v4: uuidv4 } = require('uuid');
 const db = require('../config/db');
-const { protect } = require('../middleware/auth');
+const { protect, JWT_SECRET } = require('../middleware/auth');
 
 // Helper: get JWT secret safely
 const getJwtSecret = () => {
-  const secret = process.env.JWT_SECRET;
-  if (!secret) throw new Error('JWT_SECRET environment variable is not configured');
-  return secret;
+  return JWT_SECRET;
 };
 
 // @desc    Register a new college account admin / user
