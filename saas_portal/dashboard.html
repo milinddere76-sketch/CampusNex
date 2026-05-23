@@ -22,6 +22,10 @@
       <button onclick="toggleOfflineMode()" class="btn-primary" style="padding: 6px 14px; font-size: 12px; background: #374151; box-shadow: none;">
         <i class="fas fa-wifi"></i> Toggle Connection
       </button>
+      <span id="userGreeting" style="font-size: 12px; color: var(--text-secondary);"></span>
+      <button onclick="logout()" class="btn-primary" style="padding: 6px 14px; font-size: 12px; background: #991b1b; box-shadow: none;">
+        <i class="fas fa-sign-out-alt"></i> Logout
+      </button>
     </div>
     <ul class="nav-links">
       <li><a href="index.html">Onboard Portal</a></li>
@@ -29,6 +33,24 @@
       <li><a href="superadmin.html">Super Admin Control</a></li>
     </ul>
   </header>
+
+  <!-- ============================================================ -->
+  <!-- LOGIN MODAL (shown when no valid session exists)             -->
+  <!-- ============================================================ -->
+  <div id="loginModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:9999; display:flex; align-items:center; justify-content:center;">
+    <div class="glass-container" style="width:420px; padding:40px; border-radius:20px; text-align:center;">
+      <i class="fas fa-school" style="font-size:40px; color:var(--primary-color); margin-bottom:16px;"></i>
+      <h2 style="margin-bottom:6px;">Admin Sign In</h2>
+      <p style="font-size:13px; color:var(--text-secondary); margin-bottom:28px;">Sign in to access the College Admin Control Center</p>
+      <div id="loginError" style="display:none; background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.3); color:#f87171; border-radius:8px; padding:10px 14px; margin-bottom:16px; font-size:13px;"></div>
+      <input type="email" id="loginEmail" class="form-input" placeholder="admin@apex.edu" style="margin-bottom:14px;" value="admin@apex.edu">
+      <input type="password" id="loginPassword" class="form-input" placeholder="Password" style="margin-bottom:20px;" value="password123" onkeypress="if(event.key==='Enter') doLogin()">
+      <button onclick="doLogin()" id="loginBtn" class="btn-primary" style="width:100%; padding:12px; font-size:15px;">
+        <i class="fas fa-unlock"></i> Sign In to Dashboard
+      </button>
+      <p style="margin-top:16px; font-size:11px; color:var(--text-muted);">Demo: admin@apex.edu / password123</p>
+    </div>
+  </div>
 
   <!-- Dashboard Overview grid -->
   <main style="padding: 30px 5%; max-width: 1600px; margin: 0 auto; display: grid; grid-template-columns: 3fr 1fr; gap: 30px;">
@@ -165,18 +187,96 @@
     let offlineQueue = [];
     let ws = null;
     let brandConfig = { primary: '#4F46E5', secondary: '#06B6D4', name: 'Apex Institute' };
+    let currentUser = null;
 
-    // Self Initializer
+    // ── Auth helpers ──────────────────────────────────────────────
+    function getToken() { return localStorage.getItem('campusnex_token'); }
+    function authHeaders() {
+      return { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + getToken() };
+    }
+    function logout() {
+      localStorage.removeItem('campusnex_token');
+      localStorage.removeItem('campusnex_user');
+      showLoginModal();
+    }
+    function showLoginModal() {
+      document.getElementById('loginModal').style.display = 'flex';
+    }
+    function hideLoginModal() {
+      document.getElementById('loginModal').style.display = 'none';
+    }
+
+    async function doLogin() {
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value;
+      const btn = document.getElementById('loginBtn');
+      const errBox = document.getElementById('loginError');
+      errBox.style.display = 'none';
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing in...';
+      btn.disabled = true;
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        const data = await res.json();
+        if (data.success) {
+          localStorage.setItem('campusnex_token', data.token);
+          localStorage.setItem('campusnex_user', JSON.stringify(data.user));
+          currentUser = data.user;
+          hideLoginModal();
+          initDashboard();
+        } else {
+          errBox.textContent = data.message || 'Invalid credentials';
+          errBox.style.display = 'block';
+        }
+      } catch (e) {
+        errBox.textContent = 'Server unreachable. Check connection.';
+        errBox.style.display = 'block';
+      }
+      btn.innerHTML = '<i class="fas fa-unlock"></i> Sign In to Dashboard';
+      btn.disabled = false;
+    }
+
+    // ── Boot sequence ─────────────────────────────────────────────
     window.addEventListener('DOMContentLoaded', () => {
-      // Load custom onboarding tenant theme if exists
+      const token = getToken();
+      const userStr = localStorage.getItem('campusnex_user');
+      if (!token || !userStr) {
+        showLoginModal();
+        return;
+      }
+      currentUser = JSON.parse(userStr);
+      // Verify token is still valid
+      fetch('/api/auth/me', { headers: authHeaders() })
+        .then(r => r.json())
+        .then(data => {
+          if (!data.success) { logout(); return; }
+          currentUser = data.user;
+          hideLoginModal();
+          initDashboard();
+        })
+        .catch(() => {
+          // Backend offline but token exists — allow dashboard with fallback data
+          hideLoginModal();
+          initDashboard();
+        });
+    });
+
+    function initDashboard() {
+      // Show user greeting
+      if (currentUser) {
+        document.getElementById('userGreeting').textContent = '👋 ' + (currentUser.full_name || currentUser.email);
+      }
+
+      // Apply cached tenant branding
       const cachedTenant = sessionStorage.getItem('campus_tenant');
       if (cachedTenant) {
         const tenant = JSON.parse(cachedTenant);
         brandConfig.name = tenant.name;
         brandConfig.primary = tenant.primary_color;
         brandConfig.secondary = tenant.secondary_color;
-
-        // Apply white label colors
         document.documentElement.style.setProperty('--primary-color', tenant.primary_color);
         document.documentElement.style.setProperty('--primary-hover', adjustColorBrightness(tenant.primary_color, -20));
         document.documentElement.style.setProperty('--secondary-color', tenant.secondary_color);
@@ -188,7 +288,7 @@
       loadDropoutPredictions();
       initWebSockets();
       initGpsBusMovement();
-    });
+    }
 
     // Color adjust helper for gradients
     function adjustColorBrightness(hex, percent) {
@@ -258,7 +358,8 @@
     // Load metrics from backend
     async function loadAnalytics() {
       try {
-        const res = await fetch('/api/analytics/dashboard');
+        const res = await fetch('/api/analytics/dashboard', { headers: authHeaders() });
+        if (res.status === 401) { logout(); return; }
         const data = await res.json();
         if (data.success) {
           document.getElementById('statStudents').textContent = data.stats.total_students;
@@ -268,7 +369,6 @@
           document.getElementById('statOutstanding').textContent = 'Dues: $' + data.stats.financials.outstanding.toLocaleString();
         }
       } catch (e) {
-        // Fallback local metrics if offline
         document.getElementById('statStudents').textContent = '2';
         document.getElementById('statFaculty').textContent = '1';
         document.getElementById('statAttendance').textContent = '87.5%';
@@ -301,9 +401,10 @@
         try {
           const res = await fetch('/api/attendance/mark', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: authHeaders(),
             body: JSON.stringify(action.payload)
           });
+          if (res.status === 401) { logout(); return; }
           const data = await res.json();
           if (data.success) {
             alert('🟢 Attendance verified and written to cloud server!');
@@ -324,7 +425,8 @@
       tbody.innerHTML = '';
       
       try {
-        const res = await fetch('/api/attendance');
+        const res = await fetch('/api/attendance', { headers: authHeaders() });
+        if (res.status === 401) { logout(); return; }
         const data = await res.json();
         
         if (data.success && data.attendance.length > 0) {
@@ -386,7 +488,8 @@
       container.innerHTML = '';
 
       try {
-        const res = await fetch('/api/analytics/dropout-prediction');
+        const res = await fetch('/api/analytics/dropout-prediction', { headers: authHeaders() });
+        if (res.status === 401) { logout(); return; }
         const data = await res.json();
         
         if (data.success && data.predictions.length > 0) {
@@ -453,11 +556,10 @@
         
         ws.onopen = () => {
           console.log('🔌 WebSocket Connection Active');
-          // Register college admin profile on socket
           ws.send(JSON.stringify({
             type: 'REGISTER',
-            userId: '77777777-7777-7777-7777-777777777777',
-            role: 'COLLEGE_ADMIN'
+            userId: currentUser ? currentUser.id : '77777777-7777-7777-7777-777777777777',
+            role: currentUser ? currentUser.role : 'COLLEGE_ADMIN'
           }));
         };
 
@@ -536,7 +638,7 @@
       try {
         const res = await fetch('/api/ai/ask', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer test_profile_jwt' },
+          headers: authHeaders(),
           body: JSON.stringify({ question: text, context_subject: 'Computer Science' })
         });
         const data = await res.json();

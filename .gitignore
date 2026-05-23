@@ -8,8 +8,14 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
-.env.production
-.env.local
+
+# Environment variables — never commit secrets
+.env
+.env.*
+!.env.example
+
+# Fallback JSON DB — contains hashed credentials and seeded PII
+backend/database_fallback.json
 
 # Flutter / Dart Cache & Build Outputs
 .dart_tool/

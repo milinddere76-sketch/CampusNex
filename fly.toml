@@ -26,3 +26,17 @@ primary_region = 'bom'
   cpu_kind = 'shared'
   cpus = 1
   memory_mb = 1024
+
+[http_service.concurrency]
+  type = "connections"
+  hard_limit = 50
+  soft_limit = 25
+
+[[http_service.checks]]
+  grace_period = "10s"
+  interval = "15s"
+  method = "GET"
+  path = "/health"
+  protocol = "http"
+  timeout = "5s"
+

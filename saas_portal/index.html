@@ -227,9 +227,13 @@
     async function handleOnboard(e) {
       e.preventDefault();
       
+      const btn = e.target.querySelector('button[type="submit"]');
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Launching Campus...';
+      btn.disabled = true;
+
       const collegeData = {
         name: document.getElementById('collegeName').value,
-        subdomain: document.getElementById('subdomain').value,
+        subdomain: document.getElementById('subdomain').value.toLowerCase().trim(),
         logo_url: document.getElementById('logoUrl').value,
         primary_color: document.getElementById('primaryColor').value,
         secondary_color: document.getElementById('secondaryColor').value,
@@ -247,20 +251,41 @@
         
         const resData = await response.json();
         if (resData.success) {
-          alert(`🎉 Congratulation! [${collegeData.name}] has been successfully initialized in the SaaS Ecosystem! Transaction confirmed.`);
-          window.location.href = 'dashboard.html';
+          sessionStorage.setItem('campus_tenant', JSON.stringify({
+            name: collegeData.name,
+            primary_color: collegeData.primary_color,
+            secondary_color: collegeData.secondary_color,
+            subdomain: collegeData.subdomain
+          }));
+          showToast('🎉 ' + collegeData.name + ' launched! Redirecting to dashboard...', 'success');
+          setTimeout(() => { window.location.href = 'dashboard.html'; }, 2000);
         } else {
-          alert('Error: ' + resData.message);
+          showToast('❌ ' + resData.message, 'error');
+          btn.innerHTML = '<i class="fas fa-rocket"></i> Launch Custom Digital Campus';
+          btn.disabled = false;
         }
       } catch (err) {
-        // Mock success fallback for offline execution
-        console.log('API offline, mocking onboarding logic success:', collegeData);
-        alert(`🎉 [Onboarding Simulation Successful!] \n\nInstitution: ${collegeData.name}\nSubdomain: ${collegeData.subdomain}.campusone.app\nPlan: ${collegeData.plan}\n\nCollege registered locally in session cache! Deploying custom database schemas. Redirecting to College Admin...`);
-        
-        // Save in session storage
-        sessionStorage.setItem('campus_tenant', JSON.stringify(collegeData));
-        window.location.href = 'dashboard.html';
+        // Offline simulation fallback
+        sessionStorage.setItem('campus_tenant', JSON.stringify({
+          name: collegeData.name,
+          primary_color: collegeData.primary_color,
+          secondary_color: collegeData.secondary_color,
+          subdomain: collegeData.subdomain
+        }));
+        showToast('🎉 [Offline Mode] ' + collegeData.name + ' registered locally! Redirecting...', 'success');
+        setTimeout(() => { window.location.href = 'dashboard.html'; }, 2000);
       }
+    }
+
+    function showToast(message, type) {
+      const toast = document.createElement('div');
+      const bg = type === 'success' ? 'rgba(16,185,129,0.15)' : 'rgba(239,68,68,0.15)';
+      const border = type === 'success' ? 'rgba(16,185,129,0.4)' : 'rgba(239,68,68,0.4)';
+      const color = type === 'success' ? '#10b981' : '#f87171';
+      toast.style.cssText = 'position:fixed;bottom:30px;right:30px;z-index:99999;padding:16px 22px;border-radius:12px;font-size:14px;font-weight:600;max-width:400px;box-shadow:0 10px 30px rgba(0,0,0,0.4);background:' + bg + ';border:1px solid ' + border + ';color:' + color + ';';
+      toast.textContent = message;
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 4000);
     }
   </script>
 </body>

@@ -1,42 +1,47 @@
 const jwt = require('jsonwebtoken');
 const db = require('../config/db');
 
-// Main Authenticate Middleware
+// Enforce JWT_SECRET at startup
+if (!process.env.JWT_SECRET && process.env.NODE_ENV === 'production') {
+  console.error('❌ FATAL: JWT_SECRET environment variable is not set. Refusing to start in production.');
+  process.exit(1);
+}
+
+const JWT_SECRET = process.env.JWT_SECRET || 'campusnex_dev_secret_change_in_production';
+
+// Main Authentication Middleware
 const protect = async (req, res, next) => {
   let token;
 
-  if (
-    req.headers.authorization &&
-    req.headers.authorization.startsWith('Bearer')
-  ) {
+  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
     try {
       token = req.headers.authorization.split(' ')[1];
-      const decoded = jwt.verify(token, process.env.JWT_SECRET || 'super_secret_campusnex_token_99981');
+      const decoded = jwt.verify(token, JWT_SECRET);
 
-      // Fetch user from DB
       const userRes = await db.query(
         'SELECT id, email, full_name, role, is_active FROM public.tenant_users WHERE id = $1',
         [decoded.id]
       );
 
       if (userRes.rowCount === 0) {
-        return res.status(401).json({ success: false, message: 'Not authorized, user not found' });
+        return res.status(401).json({ success: false, message: 'Not authorized — user not found' });
+      }
+
+      if (!userRes.rows[0].is_active) {
+        return res.status(403).json({ success: false, message: 'Account is deactivated' });
       }
 
       req.user = userRes.rows[0];
-      
-      // Inject Tenant Subdomain Header/Value
-      req.tenantId = req.headers['x-tenant-id'] || 'apex'; // fallback to apex for demo
-      
+      req.tenantId = req.headers['x-tenant-id'] || 'apex';
       next();
     } catch (error) {
-      console.error('Token validation failed:', error);
-      return res.status(401).json({ success: false, message: 'Not authorized, token failed' });
+      if (error.name === 'TokenExpiredError') {
+        return res.status(401).json({ success: false, message: 'Session expired. Please log in again.' });
+      }
+      return res.status(401).json({ success: false, message: 'Not authorized — invalid token' });
     }
-  }
-
-  if (!token) {
-    return res.status(401).json({ success: false, message: 'Not authorized, no token provided' });
+  } else {
+    return res.status(401).json({ success: false, message: 'Not authorized — no token provided' });
   }
 };
 
@@ -46,7 +51,7 @@ const authorize = (...roles) => {
     if (!req.user || !roles.includes(req.user.role)) {
       return res.status(403).json({
         success: false,
-        message: `Role [${req.user ? req.user.role : 'GUEST'}] is not authorized to access this resource`
+        message: `Access denied: role [${req.user ? req.user.role : 'GUEST'}] is not permitted to access this resource`
       });
     }
     next();

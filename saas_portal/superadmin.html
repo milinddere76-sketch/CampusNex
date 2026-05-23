@@ -18,8 +18,29 @@
       <li><a href="index.html">Onboard Portal</a></li>
       <li><a href="dashboard.html">College Admin Dashboard</a></li>
       <li><a href="superadmin.html" class="active">Super Admin Control</a></li>
+      <li>
+        <button onclick="logout()" class="btn-primary" style="padding: 6px 14px; font-size: 12px; background: #991b1b; box-shadow: none;">
+          <i class="fas fa-sign-out-alt"></i> Logout
+        </button>
+      </li>
     </ul>
   </header>
+
+  <!-- LOGIN MODAL -->
+  <div id="loginModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:9999; align-items:center; justify-content:center;">
+    <div class="glass-container" style="width:420px; padding:40px; border-radius:20px; text-align:center;">
+      <i class="fas fa-sliders" style="font-size:40px; color:#ec4899; margin-bottom:16px;"></i>
+      <h2 style="margin-bottom:6px;">Super-Admin Sign In</h2>
+      <p style="font-size:13px; color:var(--text-secondary); margin-bottom:28px;">Restricted access. Super-Admin credentials required.</p>
+      <div id="loginError" style="display:none; background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.3); color:#f87171; border-radius:8px; padding:10px 14px; margin-bottom:16px; font-size:13px;"></div>
+      <input type="email" id="loginEmail" class="form-input" placeholder="superadmin@campusnex.io" style="margin-bottom:14px;" value="admin@apex.edu">
+      <input type="password" id="loginPassword" class="form-input" placeholder="Password" style="margin-bottom:20px;" value="password123" onkeypress="if(event.key==='Enter') doLogin()">
+      <button onclick="doLogin()" id="loginBtn" class="btn-primary" style="width:100%; padding:12px; font-size:15px;">
+        <i class="fas fa-unlock"></i> Access Super-Admin Panel
+      </button>
+      <p style="margin-top:16px; font-size:11px; color:var(--text-muted);">Demo: admin@apex.edu / password123</p>
+    </div>
+  </div>
 
   <!-- Main Grid -->
   <main style="padding: 30px 5%; max-width: 1600px; margin: 0 auto; display: flex; flex-direction: column; gap: 30px;">
@@ -148,9 +169,71 @@
   </main>
 
   <script>
+    let currentUser = null;
+    function getToken() { return localStorage.getItem('campusnex_token'); }
+    function authHeaders() {
+      return { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + getToken() };
+    }
+    function logout() {
+      localStorage.removeItem('campusnex_token');
+      localStorage.removeItem('campusnex_user');
+      document.getElementById('loginModal').style.display = 'flex';
+    }
+    async function doLogin() {
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value;
+      const btn = document.getElementById('loginBtn');
+      const errBox = document.getElementById('loginError');
+      errBox.style.display = 'none';
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing in...';
+      btn.disabled = true;
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        const data = await res.json();
+        if (data.success) {
+          localStorage.setItem('campusnex_token', data.token);
+          localStorage.setItem('campusnex_user', JSON.stringify(data.user));
+          currentUser = data.user;
+          document.getElementById('loginModal').style.display = 'none';
+          loadColleges();
+          loadTickets();
+        } else {
+          errBox.textContent = data.message || 'Invalid credentials';
+          errBox.style.display = 'block';
+        }
+      } catch (e) {
+        errBox.textContent = 'Server unreachable. Check connection.';
+        errBox.style.display = 'block';
+      }
+      btn.innerHTML = '<i class="fas fa-unlock"></i> Access Super-Admin Panel';
+      btn.disabled = false;
+    }
     window.addEventListener('DOMContentLoaded', () => {
-      loadColleges();
-      loadTickets();
+      const token = getToken();
+      const userStr = localStorage.getItem('campusnex_user');
+      if (!token || !userStr) {
+        document.getElementById('loginModal').style.display = 'flex';
+        return;
+      }
+      currentUser = JSON.parse(userStr);
+      fetch('/api/auth/me', { headers: authHeaders() })
+        .then(r => r.json())
+        .then(data => {
+          if (!data.success) { logout(); return; }
+          currentUser = data.user;
+          document.getElementById('loginModal').style.display = 'none';
+          loadColleges();
+          loadTickets();
+        })
+        .catch(() => {
+          document.getElementById('loginModal').style.display = 'none';
+          loadColleges();
+          loadTickets();
+        });
     });
 
     async function loadColleges() {
@@ -158,7 +241,8 @@
       tbody.innerHTML = '';
 
       try {
-        const res = await fetch('/api/colleges');
+        const res = await fetch('/api/colleges', { headers: authHeaders() });
+        if (res.status === 401) { logout(); return; }
         const data = await res.json();
         
         if (data.success && data.colleges.length > 0) {

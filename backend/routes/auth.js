@@ -2,8 +2,16 @@ const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
+const { v4: uuidv4 } = require('uuid');
 const db = require('../config/db');
 const { protect } = require('../middleware/auth');
+
+// Helper: get JWT secret safely
+const getJwtSecret = () => {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) throw new Error('JWT_SECRET environment variable is not configured');
+  return secret;
+};
 
 // @desc    Register a new college account admin / user
 // @route   POST /api/auth/register
@@ -11,42 +19,48 @@ const { protect } = require('../middleware/auth');
 router.post('/register', async (req, res) => {
   const { email, password, full_name, phone, role } = req.body;
 
+  // Input validation
+  if (!email || !password || !full_name) {
+    return res.status(400).json({ success: false, message: 'Email, password and full name are required' });
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return res.status(400).json({ success: false, message: 'Invalid email format' });
+  }
+  if (password.length < 8) {
+    return res.status(400).json({ success: false, message: 'Password must be at least 8 characters' });
+  }
+
   try {
-    // Check if user exists
     const checkUser = await db.query(
       'SELECT id FROM public.tenant_users WHERE email = $1',
-      [email]
+      [email.toLowerCase().trim()]
     );
 
     if (checkUser.rowCount > 0) {
       return res.status(400).json({ success: false, message: 'User already exists with this email' });
     }
 
-    // Hash Password
-    const salt = await bcrypt.genSalt(10);
-    const passwordHash = await bcrypt.hashSync(password, salt);
+    const salt = await bcrypt.genSalt(12);
+    const passwordHash = await bcrypt.hash(password, salt);
 
-    // Insert User
-    const newId = require('uuid').v4();
     const newUser = await db.query(
       'INSERT INTO public.tenant_users (id, email, password_hash, phone, full_name, role) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id, email, full_name, role',
-      [newId, email, passwordHash, phone, full_name, role || 'STUDENT']
+      [uuidv4(), email.toLowerCase().trim(), passwordHash, phone || '', full_name, role || 'STUDENT']
     );
 
-    // Generate Token
     const token = jwt.sign(
       { id: newUser.rows[0].id, role: newUser.rows[0].role },
-      process.env.JWT_SECRET || 'super_secret_campusnex_token_99981',
+      getJwtSecret(),
       { expiresIn: process.env.JWT_EXPIRE || '7d' }
     );
 
-    return res.status(210).json({
+    return res.status(201).json({
       success: true,
       token,
-      user: newUser.rows[0]
+      user: newUser.rows[0]  // id, email, full_name, role — no password_hash
     });
   } catch (err) {
-    console.error('Registration failed:', err);
+    console.error('Registration failed:', err.message);
     return res.status(500).json({ success: false, message: 'Internal server error during registration' });
   }
 });
@@ -55,12 +69,16 @@ router.post('/register', async (req, res) => {
 // @route   POST /api/auth/login
 // @access  Public
 router.post('/login', async (req, res) => {
-  const { email, password, otp } = req.body;
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).json({ success: false, message: 'Email and password are required' });
+  }
 
   try {
     const userRes = await db.query(
-      'SELECT * FROM public.tenant_users WHERE email = $1',
-      [email]
+      'SELECT id, email, full_name, role, phone, device_id, password_hash, is_active FROM public.tenant_users WHERE email = $1',
+      [email.toLowerCase().trim()]
     );
 
     if (userRes.rowCount === 0) {
@@ -69,21 +87,18 @@ router.post('/login', async (req, res) => {
 
     const user = userRes.rows[0];
 
-    // Password verification
+    if (!user.is_active) {
+      return res.status(403).json({ success: false, message: 'Account is deactivated. Contact your administrator.' });
+    }
+
     const isMatch = await bcrypt.compare(password, user.password_hash);
     if (!isMatch) {
       return res.status(401).json({ success: false, message: 'Invalid credentials' });
     }
 
-    // OTP validation simulation (succeeds automatically if otp is "123456" or omitted for easy demo)
-    if (otp && otp !== '123456') {
-      return res.status(401).json({ success: false, message: 'Invalid or expired OTP authentication code' });
-    }
-
-    // Generate Token
     const token = jwt.sign(
       { id: user.id, role: user.role },
-      process.env.JWT_SECRET || 'super_secret_campusnex_token_99981',
+      getJwtSecret(),
       { expiresIn: process.env.JWT_EXPIRE || '7d' }
     );
 
@@ -100,7 +115,7 @@ router.post('/login', async (req, res) => {
       }
     });
   } catch (err) {
-    console.error('Login error:', err);
+    console.error('Login error:', err.message);
     return res.status(500).json({ success: false, message: 'Internal server error during login' });
   }
 });
@@ -119,12 +134,9 @@ router.get('/me', protect, async (req, res) => {
       return res.status(404).json({ success: false, message: 'User not found' });
     }
 
-    return res.status(200).json({
-      success: true,
-      user: userRes.rows[0]
-    });
+    return res.status(200).json({ success: true, user: userRes.rows[0] });
   } catch (err) {
-    console.error('Me endpoint error:', err);
+    console.error('Me endpoint error:', err.message);
     return res.status(500).json({ success: false, message: 'Internal server error' });
   }
 });
