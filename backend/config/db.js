@@ -109,6 +109,25 @@ function initMockDb() {
           modified = true;
         }
       }
+      if (!mockDb.hostel_rooms || mockDb.hostel_rooms.length === 0) {
+        mockDb.hostel_rooms = [
+          { id: 1, block_name: 'Aryabhata Block A', room_number: '203', capacity: 2, occupied_count: 1, fee_amount: 1500.00 },
+          { id: 2, block_name: 'Aryabhata Block A', room_number: '204', capacity: 2, occupied_count: 0, fee_amount: 1500.00 },
+          { id: 3, block_name: 'Aryabhata Block A', room_number: '205', capacity: 3, occupied_count: 0, fee_amount: 1200.00 },
+          { id: 4, block_name: 'Vashishta Block B', room_number: '101', capacity: 2, occupied_count: 0, fee_amount: 1600.00 }
+        ];
+        modified = true;
+      }
+      if (!mockDb.hostel_allocations) {
+        mockDb.hostel_allocations = [
+          { id: 1, room_id: 1, student_id: '44444444-4444-4444-4444-444444444444', allocated_at: new Date() }
+        ];
+        modified = true;
+      }
+      if (!mockDb.hostel_visitors) {
+        mockDb.hostel_visitors = [];
+        modified = true;
+      }
       if (modified) {
         fs.writeFileSync(fallbackDbPath, JSON.stringify(mockDb, null, 2), 'utf8');
         console.log('🌱 Fallback database updated with new multi-stream fields.');
@@ -783,6 +802,37 @@ const mockQuery = async (text, params = []) => {
       const leaveObj = mockDb.leaves.find(l => l.id === parseInt(id));
       if (leaveObj) {
         leaveObj.status = status;
+      }
+      saveMockDb();
+      result.rows = [];
+    }
+    // 14e. Hostel allocations insert/delete/update
+    else if (normText.includes('insert into public.tenant_hostel_allocations')) {
+      const newAlloc = {
+        id: mockDb.hostel_allocations.length + 1,
+        room_id: parseInt(params[0]),
+        student_id: params[1],
+        allocated_at: new Date()
+      };
+      mockDb.hostel_allocations.push(newAlloc);
+      saveMockDb();
+      result.rows = [newAlloc];
+    }
+    else if (normText.includes('delete from public.tenant_hostel_allocations')) {
+      const id = parseInt(params[0]);
+      mockDb.hostel_allocations = mockDb.hostel_allocations.filter(a => a.id !== id);
+      saveMockDb();
+      result.rows = [];
+    }
+    else if (normText.includes('update public.tenant_hostel_rooms')) {
+      const roomId = parseInt(params[0]);
+      const rm = mockDb.hostel_rooms.find(r => r.id === roomId);
+      if (rm) {
+        if (normText.includes('occupied_count + 1') || normText.includes('occupied_count = occupied_count + 1')) {
+          rm.occupied_count = (rm.occupied_count || 0) + 1;
+        } else if (normText.includes('greatest(0, occupied_count - 1)') || normText.includes('occupied_count - 1')) {
+          rm.occupied_count = Math.max(0, (rm.occupied_count || 1) - 1);
+        }
       }
       saveMockDb();
       result.rows = [];

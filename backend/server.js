@@ -22,6 +22,7 @@ const documentsRoutes = require('./routes/documents');
 const employeesRoutes = require('./routes/employees');
 const noticesRoutes = require('./routes/notices');
 const leavesRoutes = require('./routes/leaves');
+const hostelRoutes = require('./routes/hostel');
 
 const app = express();
 const server = http.createServer(app);
@@ -113,6 +114,7 @@ app.use('/api/documents', documentsRoutes);
 app.use('/api/employees', employeesRoutes);
 app.use('/api/notices', noticesRoutes);
 app.use('/api/leaves', leavesRoutes);
+app.use('/api/hostel', hostelRoutes);
 
 // Server status
 app.get('/api-status', (req, res) => {
