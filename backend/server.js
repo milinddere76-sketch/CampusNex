@@ -16,6 +16,10 @@ const feeRoutes = require('./routes/fees');
 const syncRoutes = require('./routes/sync');
 const analyticsRoutes = require('./routes/analytics');
 const aiRoutes = require('./routes/ai');
+const admissionsRoutes = require('./routes/admissions');
+const recruitmentRoutes = require('./routes/recruitment');
+const documentsRoutes = require('./routes/documents');
+const employeesRoutes = require('./routes/employees');
 
 const app = express();
 const server = http.createServer(app);
@@ -101,6 +105,10 @@ app.use('/api/fees', feeRoutes);
 app.use('/api/sync', syncRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/ai', aiRoutes);
+app.use('/api/admissions', admissionsRoutes);
+app.use('/api/recruitment', recruitmentRoutes);
+app.use('/api/documents', documentsRoutes);
+app.use('/api/employees', employeesRoutes);
 
 // Server status
 app.get('/api-status', (req, res) => {

@@ -178,3 +178,31 @@ INSERT INTO public.tenant_chat_messages (sender_id, receiver_id, message, file_u
 VALUES
 ('33333333-3333-3333-3333-333333333333', '44444444-4444-4444-4444-444444444444', 'Hey Alex, please submit your Red-Black tree insertion code by tomorrow evening.', NULL, CURRENT_TIMESTAMP - INTERVAL '3 hours', TRUE),
 ('44444444-4444-4444-4444-444444444444', '33333333-3333-3333-3333-333333333333', 'Yes Professor, finishing up the balance node rotation tests now. Will send PDF submission soon.', NULL, CURRENT_TIMESTAMP - INTERVAL '2 hours', FALSE);
+
+-- 18. SEED STUDENT ADMISSIONS
+INSERT INTO public.tenant_admissions (full_name, dob, gender, address, mobile, email, aadhaar_id, previous_education, marks_percentage, category, course_id, status, roll_number, class_id, payment_status)
+VALUES
+('Rohan Sharma', '2006-04-12', 'MALE', '124 Park Ave, Delhi', '+91 9876543210', 'rohan.sharma@gmail.com', '123456789012', 'High School CBSE', 92.40, 'OBC', 1, 'CONFIRMED', 'APEX-2026-CSE-109', 1, 'PAID'),
+('Priya Nair', '2006-09-25', 'FEMALE', '54 Gandhi St, Bangalore', '+91 8765432109', 'priya.nair@gmail.com', '987654321098', 'State Board Karnataka', 88.50, 'GENERAL', 1, 'SUBMITTED', NULL, NULL, 'UNPAID'),
+('Aditya Verma', '2005-11-05', 'MALE', '78 Nehru Road, Mumbai', '+91 7654321098', 'aditya.v@gmail.com', '456789012345', 'CBSE Class XII', 95.00, 'GENERAL', 2, 'REVIEW', NULL, NULL, 'PAID');
+
+-- 19. SEED JOB OPENINGS
+INSERT INTO public.tenant_job_openings (id, role_title, department_id, eligibility, salary_lpa, last_date, interview_mode)
+VALUES
+(1, 'LECTURER', 1, 'M.Tech in CS/IT with first-class grades. Teaching experience is optional.', 8.50, '2026-06-30', 'ONLINE'),
+(2, 'ASSOCIATE_PROFESSOR', 1, 'Ph.D. in Computer Science with minimum 8 publications and 5 years experience.', 18.00, '2026-06-15', 'OFFLINE'),
+(3, 'LIBRARIAN', 2, 'Masters in Library Science, well versed with digital barcode systems.', 6.00, '2026-07-10', 'OFFLINE');
+
+-- 20. SEED JOB APPLICATIONS
+INSERT INTO public.tenant_job_applications (id, job_opening_id, full_name, qualification, experience_years, email, phone, resume_url, status, remarks)
+VALUES
+(1, 1, 'Dr. Sarah Connor', 'Ph.D in AI/ML', 4, 'sarah.connor@gmail.com', '+1 (555) 901-2345', 'https://campusnex.fly.dev/uploads/resumes/sarah_resume.pdf', 'SHORTLISTED', 'Strong research background in deep learning models.'),
+(2, 2, 'Prof. Alan Turing', 'Ph.D. in Computer Science', 12, 'alan.turing@gmail.com', '+1 (555) 890-1234', 'https://campusnex.fly.dev/uploads/resumes/alan_resume.pdf', 'INTERVIEWED', 'Pioneer in computing algorithms, excellent panel marks.'),
+(3, 1, 'John Doe', 'B.Tech in CS', 1, 'john.recruits@gmail.com', '+1 (555) 789-0123', NULL, 'APPLIED', 'Entry level candidate.');
+
+-- 21. SEED INTERVIEW PANEL SCORES
+INSERT INTO public.tenant_interview_scores (application_id, interviewer_role, score, comments)
+VALUES
+(2, 'HOD', 10, 'Outstanding candidate. Incomparable experience.'),
+(2, 'PRINCIPAL', 9, 'Highly recommended for immediate appointment.'),
+(1, 'HOD', 8, 'Good coding ability, demonstrated solid AI knowledge.');

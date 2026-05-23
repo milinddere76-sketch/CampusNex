@@ -139,4 +139,19 @@ router.get('/me', protect, async (req, res) => {
   }
 });
 
+// @desc    Get All Users List
+// @route   GET /api/auth/users
+// @access  Private (Admins and Principals)
+router.get('/users', protect, async (req, res) => {
+  try {
+    const usersRes = await db.query(
+      'SELECT id, email, full_name, role, phone, is_active FROM public.tenant_users ORDER BY role, full_name'
+    );
+    return res.status(200).json({ success: true, users: usersRes.rows });
+  } catch (err) {
+    console.error('Fetch users failed:', err.message);
+    return res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+});
+
 module.exports = router;

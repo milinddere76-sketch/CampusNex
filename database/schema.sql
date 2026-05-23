@@ -324,9 +324,66 @@ CREATE TABLE IF NOT EXISTS public.tenant_offline_sync_queue (
     conflict_resolution TEXT
 );
 
+CREATE TABLE IF NOT EXISTS public.tenant_admissions (
+    id SERIAL PRIMARY KEY,
+    full_name VARCHAR(255) NOT NULL,
+    dob DATE NOT NULL,
+    gender VARCHAR(20) NOT NULL,
+    address TEXT NOT NULL,
+    mobile VARCHAR(50) NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    aadhaar_id VARCHAR(50) NOT NULL,
+    previous_education TEXT NOT NULL,
+    marks_percentage DECIMAL(5, 2) NOT NULL,
+    category VARCHAR(50) DEFAULT 'GENERAL',
+    course_id INT REFERENCES public.tenant_courses(id) ON DELETE SET NULL,
+    status VARCHAR(50) DEFAULT 'SUBMITTED', -- SUBMITTED, REVIEW, VERIFICATION, APPROVED, REJECTED, CONFIRMED
+    roll_number VARCHAR(100) UNIQUE,
+    class_id INT REFERENCES public.tenant_classes(id) ON DELETE SET NULL,
+    payment_status VARCHAR(50) DEFAULT 'UNPAID', -- UNPAID, PAID
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS public.tenant_job_openings (
+    id SERIAL PRIMARY KEY,
+    role_title VARCHAR(255) NOT NULL,
+    department_id INT REFERENCES public.tenant_departments(id) ON DELETE CASCADE,
+    eligibility TEXT NOT NULL,
+    salary_lpa DECIMAL(5, 2) NOT NULL,
+    last_date DATE NOT NULL,
+    interview_mode VARCHAR(50) DEFAULT 'ONLINE', -- ONLINE, OFFLINE
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS public.tenant_job_applications (
+    id SERIAL PRIMARY KEY,
+    job_opening_id INT REFERENCES public.tenant_job_openings(id) ON DELETE CASCADE,
+    full_name VARCHAR(255) NOT NULL,
+    qualification VARCHAR(255) NOT NULL,
+    experience_years INT DEFAULT 0,
+    email VARCHAR(255) NOT NULL,
+    phone VARCHAR(50),
+    resume_url TEXT,
+    status VARCHAR(50) DEFAULT 'APPLIED', -- APPLIED, SHORTLISTED, INTERVIEWED, SELECTED, REJECTED, CONFIRMED
+    remarks TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS public.tenant_interview_scores (
+    id SERIAL PRIMARY KEY,
+    application_id INT REFERENCES public.tenant_job_applications(id) ON DELETE CASCADE,
+    interviewer_role VARCHAR(50) NOT NULL, -- PRINCIPAL, HOD, HR
+    score INT NOT NULL,
+    comments TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
 -- CREATE ESSENTIAL SCOPE INDEXES FOR HIGH PERFORMANCE
 CREATE INDEX IF NOT EXISTS idx_tenant_users_email ON public.tenant_users(email);
 CREATE INDEX IF NOT EXISTS idx_tenant_students_parent ON public.tenant_students(parent_id);
 CREATE INDEX IF NOT EXISTS idx_tenant_attendance_date ON public.tenant_attendance(date, student_id);
 CREATE INDEX IF NOT EXISTS idx_tenant_sync_status ON public.tenant_offline_sync_queue(sync_status);
 CREATE INDEX IF NOT EXISTS idx_tenant_chat_sender_receiver ON public.tenant_chat_messages(sender_id, receiver_id);
+CREATE INDEX IF NOT EXISTS idx_tenant_admissions_email ON public.tenant_admissions(email);
+CREATE INDEX IF NOT EXISTS idx_tenant_job_apps_opening ON public.tenant_job_applications(job_opening_id);
+

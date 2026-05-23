@@ -64,6 +64,10 @@ let mockDb = {
   placement_applications: [],
   chat_messages: [],
   notices: [],
+  admissions: [],
+  job_openings: [],
+  job_applications: [],
+  interview_scores: [],
   offline_sync_queue: []
 };
 
@@ -234,6 +238,34 @@ function initMockDb() {
   mockDb.chat_messages = [
     { id: 1, sender_id: '33333333-3333-3333-3333-333333333333', receiver_id: '44444444-4444-4444-4444-444444444444', message: 'Hey Alex, please submit your Red-Black tree insertion code by tomorrow evening.', sent_at: new Date(Date.now() - 3 * 3600000), is_read: true },
     { id: 2, sender_id: '44444444-4444-4444-4444-444444444444', receiver_id: '33333333-3333-3333-3333-333333333333', message: 'Yes Professor, finishing up the balance node rotation tests now. Will send PDF submission soon.', sent_at: new Date(Date.now() - 2 * 3600000), is_read: false }
+  ];
+
+  // Admissions Seed
+  mockDb.admissions = [
+    { id: 1, full_name: 'Rohan Sharma', dob: '2006-04-12', gender: 'MALE', address: '124 Park Ave, Delhi', mobile: '+91 9876543210', email: 'rohan.sharma@gmail.com', aadhaar_id: '123456789012', previous_education: 'High School CBSE', marks_percentage: 92.40, category: 'OBC', course_id: 1, status: 'CONFIRMED', roll_number: 'APEX-2026-CSE-109', class_id: 1, payment_status: 'PAID', created_at: new Date() },
+    { id: 2, full_name: 'Priya Nair', dob: '2006-09-25', gender: 'FEMALE', address: '54 Gandhi St, Bangalore', mobile: '+91 8765432109', email: 'priya.nair@gmail.com', aadhaar_id: '987654321098', previous_education: 'State Board Karnataka', marks_percentage: 88.50, category: 'GENERAL', course_id: 1, status: 'SUBMITTED', roll_number: null, class_id: null, payment_status: 'UNPAID', created_at: new Date() },
+    { id: 3, full_name: 'Aditya Verma', dob: '2005-11-05', gender: 'MALE', address: '78 Nehru Road, Mumbai', mobile: '+91 7654321098', email: 'aditya.v@gmail.com', aadhaar_id: '456789012345', previous_education: 'CBSE Class XII', marks_percentage: 95.00, category: 'GENERAL', course_id: 2, status: 'REVIEW', roll_number: null, class_id: null, payment_status: 'PAID', created_at: new Date() }
+  ];
+
+  // Job Openings Seed
+  mockDb.job_openings = [
+    { id: 1, role_title: 'LECTURER', department_id: 1, eligibility: 'M.Tech in CS/IT with first-class grades. Teaching experience is optional.', salary_lpa: 8.50, last_date: '2026-06-30', interview_mode: 'ONLINE', created_at: new Date() },
+    { id: 2, role_title: 'ASSOCIATE_PROFESSOR', department_id: 1, eligibility: 'Ph.D. in Computer Science with minimum 8 publications and 5 years experience.', salary_lpa: 18.00, last_date: '2026-06-15', interview_mode: 'OFFLINE', created_at: new Date() },
+    { id: 3, role_title: 'LIBRARIAN', department_id: 2, eligibility: 'Masters in Library Science, well versed with digital barcode systems.', salary_lpa: 6.00, last_date: '2026-07-10', interview_mode: 'OFFLINE', created_at: new Date() }
+  ];
+
+  // Job Applications Seed
+  mockDb.job_applications = [
+    { id: 1, job_opening_id: 1, full_name: 'Dr. Sarah Connor', qualification: 'Ph.D in AI/ML', experience_years: 4, email: 'sarah.connor@gmail.com', phone: '+1 (555) 901-2345', resume_url: 'https://campusnex.fly.dev/uploads/resumes/sarah_resume.pdf', status: 'SHORTLISTED', remarks: 'Strong research background in deep learning models.', created_at: new Date() },
+    { id: 2, job_opening_id: 2, full_name: 'Prof. Alan Turing', qualification: 'Ph.D. in Computer Science', experience_years: 12, email: 'alan.turing@gmail.com', phone: '+1 (555) 890-1234', resume_url: 'https://campusnex.fly.dev/uploads/resumes/alan_resume.pdf', status: 'INTERVIEWED', remarks: 'Pioneer in computing algorithms, excellent panel marks.', created_at: new Date() },
+    { id: 3, job_opening_id: 1, full_name: 'John Doe', qualification: 'B.Tech in CS', experience_years: 1, email: 'john.recruits@gmail.com', phone: '+1 (555) 789-0123', resume_url: null, status: 'APPLIED', remarks: 'Entry level candidate.', created_at: new Date() }
+  ];
+
+  // Interview Scores Seed
+  mockDb.interview_scores = [
+    { id: 1, application_id: 2, interviewer_role: 'HOD', score: 10, comments: 'Outstanding candidate. Incomparable experience.', created_at: new Date() },
+    { id: 2, application_id: 2, interviewer_role: 'PRINCIPAL', score: 9, comments: 'Highly recommended for immediate appointment.', created_at: new Date() },
+    { id: 3, application_id: 1, interviewer_role: 'HOD', score: 8, comments: 'Good coding ability, demonstrated solid AI knowledge.', created_at: new Date() }
   ];
 
   mockDb.offline_sync_queue = [];
@@ -461,6 +493,150 @@ const mockQuery = async (text, params = []) => {
       mockDb.chat_messages.push(newMsg);
       saveMockDb();
       result.rows = [newMsg];
+    }
+    // 13a. INSERT INTO public.tenant_admissions
+    else if (normText.includes('insert into public.tenant_admissions')) {
+      const newAdm = {
+        id: mockDb.admissions.length + 1,
+        full_name: params[0],
+        dob: params[1],
+        gender: params[2],
+        address: params[3],
+        mobile: params[4],
+        email: params[5],
+        aadhaar_id: params[6],
+        previous_education: params[7],
+        marks_percentage: parseFloat(params[8]),
+        category: params[9] || 'GENERAL',
+        course_id: parseInt(params[10]),
+        status: 'SUBMITTED',
+        roll_number: null,
+        class_id: null,
+        payment_status: params[11] || 'UNPAID',
+        created_at: new Date()
+      };
+      mockDb.admissions.push(newAdm);
+      saveMockDb();
+      result.rows = [newAdm];
+    }
+    // 13b. UPDATE public.tenant_admissions
+    else if (normText.includes('update public.tenant_admissions')) {
+      const id = params[params.length - 1];
+      const adm = mockDb.admissions.find(a => a.id === parseInt(id));
+      if (adm) {
+        if (params.length === 4) {
+          const [status, roll_number, class_id] = params;
+          adm.status = status;
+          adm.roll_number = roll_number;
+          adm.class_id = class_id ? parseInt(class_id) : null;
+          if (status === 'CONFIRMED') {
+            adm.payment_status = 'PAID';
+            const existingUser = mockDb.users.find(u => u.email === adm.email);
+            if (!existingUser) {
+              const newId = require('uuid').v4();
+              mockDb.users.push({
+                id: newId,
+                email: adm.email,
+                password_hash: '$2b$10$T8M2VlE38/a3u.oJ7zN1eO5R9xLwXp/2xN9vE8lPpe2nS80p0S3H.', // password123
+                phone: adm.mobile,
+                full_name: adm.full_name,
+                role: 'STUDENT',
+                device_id: null,
+                is_active: true
+              });
+              mockDb.students.push({
+                user_id: newId,
+                roll_number: roll_number || `APEX-2026-CSE-${100 + adm.id}`,
+                department_id: 1,
+                admission_year: 2026,
+                current_semester_id: 1,
+                parent_id: null,
+                cgpa: 0.00
+              });
+            }
+          }
+        } else if (params.length === 2) {
+          const [status] = params;
+          adm.status = status;
+        }
+      }
+      saveMockDb();
+      result.rows = [];
+    }
+    // 13c. INSERT INTO public.tenant_job_openings
+    else if (normText.includes('insert into public.tenant_job_openings')) {
+      const newJob = {
+        id: mockDb.job_openings.length + 1,
+        role_title: params[0],
+        department_id: parseInt(params[1]),
+        eligibility: params[2],
+        salary_lpa: parseFloat(params[3]),
+        last_date: params[4],
+        interview_mode: params[5] || 'ONLINE',
+        created_at: new Date()
+      };
+      mockDb.job_openings.push(newJob);
+      saveMockDb();
+      result.rows = [newJob];
+    }
+    // 13d. INSERT INTO public.tenant_job_applications
+    else if (normText.includes('insert into public.tenant_job_applications')) {
+      const newApp = {
+        id: mockDb.job_applications.length + 1,
+        job_opening_id: parseInt(params[0]),
+        full_name: params[1],
+        qualification: params[2],
+        experience_years: parseInt(params[3] || 0),
+        email: params[4],
+        phone: params[5],
+        resume_url: params[6] || null,
+        status: 'APPLIED',
+        remarks: null,
+        created_at: new Date()
+      };
+      mockDb.job_applications.push(newApp);
+      saveMockDb();
+      result.rows = [newApp];
+    }
+    // 13e. UPDATE public.tenant_job_applications
+    else if (normText.includes('update public.tenant_job_applications')) {
+      const [status, remarks, id] = params;
+      const appObj = mockDb.job_applications.find(a => a.id === parseInt(id));
+      if (appObj) {
+        appObj.status = status;
+        appObj.remarks = remarks || appObj.remarks;
+        if (status === 'CONFIRMED') {
+          const existingUser = mockDb.users.find(u => u.email === appObj.email);
+          if (!existingUser) {
+            mockDb.users.push({
+              id: require('uuid').v4(),
+              email: appObj.email,
+              password_hash: '$2b$10$T8M2VlE38/a3u.oJ7zN1eO5R9xLwXp/2xN9vE8lPpe2nS80p0S3H.', // password123
+              phone: appObj.phone,
+              full_name: appObj.full_name,
+              role: 'FACULTY',
+              device_id: null,
+              is_active: true
+            });
+          }
+        }
+      }
+      saveMockDb();
+      result.rows = [];
+    }
+    // 13f. INSERT INTO public.tenant_interview_scores
+    else if (normText.includes('insert into public.tenant_interview_scores')) {
+      const newScore = {
+        id: mockDb.interview_scores.length + 1,
+        application_id: parseInt(params[0]),
+        interviewer_role: params[1],
+        score: parseInt(params[2]),
+        comments: params[3],
+        created_at: new Date()
+      };
+      mockDb.interview_scores.push(newScore);
+      saveMockDb();
+      result.rows = [newScore];
     }
     // 14. INSERT INTO public.tenant_offline_sync_queue
     else if (normText.includes('insert into public.tenant_offline_sync_queue')) {
