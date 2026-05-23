@@ -413,6 +413,11 @@ CREATE TABLE IF NOT EXISTS public.tenant_leaves (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE IF NOT EXISTS public.tenant_role_features (
+    role VARCHAR(50) PRIMARY KEY,
+    allowed_features JSONB DEFAULT '[]'
+);
+
 -- CREATE ESSENTIAL SCOPE INDEXES FOR HIGH PERFORMANCE
 CREATE INDEX IF NOT EXISTS idx_tenant_users_email ON public.tenant_users(email);
 CREATE INDEX IF NOT EXISTS idx_tenant_students_parent ON public.tenant_students(parent_id);

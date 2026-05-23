@@ -258,10 +258,86 @@
                 <th>Phone Number</th>
                 <th>Assigned Role</th>
                 <th>Account Status</th>
+                <th style="text-align: right;">Action</th>
               </tr>
             </thead>
             <tbody id="adminUserTableBody">
               <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Role-Based Feature Permissions Matrix -->
+      <div class="glass-card">
+        <h2><i class="fas fa-toggle-on" style="color: #8b5cf6; margin-right: 10px;"></i> Role-Based Feature Permissions Matrix</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 20px;">Toggle which modules are accessible globally to each institutional role view.</p>
+        
+        <div class="table-container">
+          <table class="custom-table" style="font-size:12px; text-align: center;">
+            <thead>
+              <tr style="color: var(--text-secondary);">
+                <th style="text-align: left; width: 220px;">Module Feature</th>
+                <th style="text-align: center;">Student</th>
+                <th style="text-align: center;">Faculty</th>
+                <th style="text-align: center;">Principal</th>
+                <th style="text-align: center;">HOD</th>
+                <th style="text-align: center;">Warden</th>
+                <th style="text-align: center;">Librarian</th>
+                <th style="text-align: center;">Accountant</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="text-align: left; padding: 12px 16px;"><strong>🤖 AI Academic Doubt Assistant</strong></td>
+                <td style="text-align: center;"><input type="checkbox" class="rf-cb" data-role="STUDENT" data-feature="ai_assistant" onchange="toggleRoleFeature(this)" style="width:16px; height:16px; cursor:pointer;"></td>
+                <td style="text-align: center;"><input type="checkbox" class="rf-cb" data-role="FACULTY" data-feature="ai_assistant" onchange="toggleRoleFeature(this)" style="width:16px; height:16px; cursor:pointer;"></td>
+                <td style="text-align: center;"><input type="checkbox" class="rf-cb" data-role="PRINCIPAL" data-feature="ai_assistant" onchange="toggleRoleFeature(this)" style="width:16px; height:16px; cursor:pointer;"></td>
+                <td style="text-align: center;"><input type="checkbox" class="rf-cb" data-role="HOD" data-feature="ai_assistant" onchange="toggleRoleFeature(this)" style="width:16px; height:16px; cursor:pointer;"></td>
+                <td style="text-align: center;"><input type="checkbox" class="rf-cb" data-role="HOSTEL_WARDEN" data-feature="ai_assistant" onchange="toggleRoleFeature(this)" style="width:16px; height:16px; cursor:pointer;"></td>
+                <td style="text-align: center;"><input type="checkbox" class="rf-cb" data-role="LIBRARIAN" data-feature="ai_assistant" onchange="toggleRoleFeature(this)" style="width:16px; height:16px; cursor:pointer;"></td>
+                <td style="text-align: center;"><input type="checkbox" class="rf-cb" data-role="ACCOUNTANT" data-feature="ai_assistant" onchange="toggleRoleFeature(this)" style="width:16px; height:16px; cursor:pointer;"></td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="text-align: left; padding: 12px 16px;"><strong>🏢 Hostel Allocation Dorms</strong></td>
+                <td style="text-align: center;"><input type="checkbox" class="rf-cb" data-role="STUDENT" data-feature="hostel" onchange="toggleRoleFeature(this)" style="width:16px; height:16px; cursor:pointer;"></td>
+                <td style="text-align: center;"><input type="checkbox" class="rf-cb" data-role="FACULTY" data-feature="hostel" onchange="toggleRoleFeature(this)" style="width:16px; height:16px; cursor:pointer;"></td>
+                <td style="text-align: center;"><input type="checkbox" class="rf-cb" data-role="PRINCIPAL" data-feature="hostel" onchange="toggleRoleFeature(this)" style="width:16px; height:16px; cursor:pointer;"></td>
+                <td style="text-align: center;"><input type="checkbox" class="rf-cb" data-role="HOD" data-feature="hostel" onchange="toggleRoleFeature(this)" style="width:16px; height:16px; cursor:pointer;"></td>
+                <td style="text-align: center;"><input type="checkbox" class="rf-cb" data-role="HOSTEL_WARDEN" data-feature="hostel" onchange="toggleRoleFeature(this)" style="width:16px; height:16px; cursor:pointer;"></td>
+                <td style="text-align: center;"><input type="checkbox" class="rf-cb" data-role="LIBRARIAN" data-feature="hostel" onchange="toggleRoleFeature(this)" style="width:16px; height:16px; cursor:pointer;"></td>
+                <td style="text-align: center;"><input type="checkbox" class="rf-cb" data-role="ACCOUNTANT" data-feature="hostel" onchange="toggleRoleFeature(this)" style="width:16px; height:16px; cursor:pointer;"></td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="text-align: left; padding: 12px 16px;"><strong>🚌 GPS Live Shuttle Tracking</strong></td>
+                <td style="text-align: center;"><input type="checkbox" class="rf-cb" data-role="STUDENT" data-feature="transport" onchange="toggleRoleFeature(this)" style="width:16px; height:16px; cursor:pointer;"></td>
+                <td style="text-align: center;"><input type="checkbox" class="rf-cb" data-role="FACULTY" data-feature="transport" onchange="toggleRoleFeature(this)" style="width:16px; height:16px; cursor:pointer;"></td>
+                <td style="text-align: center;"><input type="checkbox" class="rf-cb" data-role="PRINCIPAL" data-feature="transport" onchange="toggleRoleFeature(this)" style="width:16px; height:16px; cursor:pointer;"></td>
+                <td style="text-align: center;"><input type="checkbox" class="rf-cb" data-role="HOD" data-feature="transport" onchange="toggleRoleFeature(this)" style="width:16px; height:16px; cursor:pointer;"></td>
+                <td style="text-align: center;"><input type="checkbox" class="rf-cb" data-role="HOSTEL_WARDEN" data-feature="transport" onchange="toggleRoleFeature(this)" style="width:16px; height:16px; cursor:pointer;"></td>
+                <td style="text-align: center;"><input type="checkbox" class="rf-cb" data-role="LIBRARIAN" data-feature="transport" onchange="toggleRoleFeature(this)" style="width:16px; height:16px; cursor:pointer;"></td>
+                <td style="text-align: center;"><input type="checkbox" class="rf-cb" data-role="ACCOUNTANT" data-feature="transport" onchange="toggleRoleFeature(this)" style="width:16px; height:16px; cursor:pointer;"></td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="text-align: left; padding: 12px 16px;"><strong>💳 Fee Payments Ledger</strong></td>
+                <td style="text-align: center;"><input type="checkbox" class="rf-cb" data-role="STUDENT" data-feature="fees" onchange="toggleRoleFeature(this)" style="width:16px; height:16px; cursor:pointer;"></td>
+                <td style="text-align: center;"><input type="checkbox" class="rf-cb" data-role="FACULTY" data-feature="fees" onchange="toggleRoleFeature(this)" style="width:16px; height:16px; cursor:pointer;"></td>
+                <td style="text-align: center;"><input type="checkbox" class="rf-cb" data-role="PRINCIPAL" data-feature="fees" onchange="toggleRoleFeature(this)" style="width:16px; height:16px; cursor:pointer;"></td>
+                <td style="text-align: center;"><input type="checkbox" class="rf-cb" data-role="HOD" data-feature="fees" onchange="toggleRoleFeature(this)" style="width:16px; height:16px; cursor:pointer;"></td>
+                <td style="text-align: center;"><input type="checkbox" class="rf-cb" data-role="HOSTEL_WARDEN" data-feature="fees" onchange="toggleRoleFeature(this)" style="width:16px; height:16px; cursor:pointer;"></td>
+                <td style="text-align: center;"><input type="checkbox" class="rf-cb" data-role="LIBRARIAN" data-feature="fees" onchange="toggleRoleFeature(this)" style="width:16px; height:16px; cursor:pointer;"></td>
+                <td style="text-align: center;"><input type="checkbox" class="rf-cb" data-role="ACCOUNTANT" data-feature="fees" onchange="toggleRoleFeature(this)" style="width:16px; height:16px; cursor:pointer;"></td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="text-align: left; padding: 12px 16px;"><strong>📚 Library Books Catalog</strong></td>
+                <td style="text-align: center;"><input type="checkbox" class="rf-cb" data-role="STUDENT" data-feature="library" onchange="toggleRoleFeature(this)" style="width:16px; height:16px; cursor:pointer;"></td>
+                <td style="text-align: center;"><input type="checkbox" class="rf-cb" data-role="FACULTY" data-feature="library" onchange="toggleRoleFeature(this)" style="width:16px; height:16px; cursor:pointer;"></td>
+                <td style="text-align: center;"><input type="checkbox" class="rf-cb" data-role="PRINCIPAL" data-feature="library" onchange="toggleRoleFeature(this)" style="width:16px; height:16px; cursor:pointer;"></td>
+                <td style="text-align: center;"><input type="checkbox" class="rf-cb" data-role="HOD" data-feature="library" onchange="toggleRoleFeature(this)" style="width:16px; height:16px; cursor:pointer;"></td>
+                <td style="text-align: center;"><input type="checkbox" class="rf-cb" data-role="HOSTEL_WARDEN" data-feature="library" onchange="toggleRoleFeature(this)" style="width:16px; height:16px; cursor:pointer;"></td>
+                <td style="text-align: center;"><input type="checkbox" class="rf-cb" data-role="LIBRARIAN" data-feature="library" onchange="toggleRoleFeature(this)" style="width:16px; height:16px; cursor:pointer;"></td>
+                <td style="text-align: center;"><input type="checkbox" class="rf-cb" data-role="ACCOUNTANT" data-feature="library" onchange="toggleRoleFeature(this)" style="width:16px; height:16px; cursor:pointer;"></td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -758,7 +834,7 @@
           </div>
 
           <!-- GPS tracking bus widget -->
-          <div style="background: rgba(255,255,255,0.02); padding: 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+          <div id="studentGpsCard" style="background: rgba(255,255,255,0.02); padding: 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
             <h3 style="margin-bottom: 15px;"><i class="fas fa-bus"></i> Live GPS Shuttle</h3>
             <p id="studentGpsDetails" style="font-size:11px; color:var(--text-secondary); margin-bottom: 15px;">Bus status: Active</p>
             <button onclick="switchRole('warden_transport')" class="btn-primary" style="width: 100%;"><i class="fas fa-location-arrow"></i> Open GPS Screen</button>
@@ -771,7 +847,7 @@
         </div>
 
         <!-- Student invoices -->
-        <div class="glass-card">
+        <div id="studentFeesCard" class="glass-card">
           <h3><i class="fas fa-file-invoice-dollar"></i> Student Fee Invoices</h3>
           <div class="table-container">
             <table class="custom-table">
@@ -1086,6 +1162,7 @@
       loadPrincipalApprovalQueues();
       filterMetricsByStream();
       loadHostelData();
+      loadPermissionsMatrix();
     }
 
     // ── Authentication check ─────────────────────────────────────
@@ -1146,6 +1223,7 @@
       loadPrincipalApprovalQueues();
       loadAssignedStreams();
       loadHostelData();
+      loadPermissionsMatrix();
       renderAcademicTree();
       toggleHierarchyFormFields();
       initWebSockets();
@@ -1166,30 +1244,90 @@
                 <td><strong>${u.email}</strong><br><small style="color:#64748b; font-family:monospace;">${u.id}</small></td>
                 <td>${u.full_name}</td>
                 <td>${u.phone || '--'}</td>
-                <td><span class="badge badge-info">${u.role}</span></td>
-                <td><span class="badge ${u.is_active ? 'badge-success' : 'badge-danger'}">${u.is_active ? 'ACTIVE' : 'BLOCKED'}</span></td>
+                <td>
+                  <select id="role-select-${u.id}" class="form-input" style="padding: 4px; font-size: 12px; height: auto; width: 140px; background: rgba(0,0,0,0.4); color: white; border: 1px solid rgba(255,255,255,0.1);">
+                    <option value="STUDENT" ${u.role === 'STUDENT' ? 'selected' : ''}>Student</option>
+                    <option value="FACULTY" ${u.role === 'FACULTY' ? 'selected' : ''}>Faculty / Lecturer</option>
+                    <option value="HOD" ${u.role === 'HOD' ? 'selected' : ''}>HOD</option>
+                    <option value="PRINCIPAL" ${u.role === 'PRINCIPAL' ? 'selected' : ''}>Principal</option>
+                    <option value="LIBRARIAN" ${u.role === 'LIBRARIAN' ? 'selected' : ''}>Librarian</option>
+                    <option value="HOSTEL_WARDEN" ${u.role === 'HOSTEL_WARDEN' ? 'selected' : ''}>Hostel Warden</option>
+                    <option value="ACCOUNTANT" ${u.role === 'ACCOUNTANT' ? 'selected' : ''}>Accountant</option>
+                    <option value="COLLEGE_ADMIN" ${u.role === 'COLLEGE_ADMIN' ? 'selected' : ''}>College Admin</option>
+                  </select>
+                </td>
+                <td>
+                  <select id="status-select-${u.id}" class="form-input" style="padding: 4px; font-size: 12px; height: auto; width: 100px; background: rgba(0,0,0,0.4); color: white; border: 1px solid rgba(255,255,255,0.1);">
+                    <option value="true" ${u.is_active ? 'selected' : ''}>ACTIVE</option>
+                    <option value="false" ${!u.is_active ? 'selected' : ''}>BLOCKED</option>
+                  </select>
+                </td>
+                <td style="text-align: right;">
+                  <button onclick="saveUserPermissions('${u.id}', 'role-select-${u.id}', 'status-select-${u.id}')" class="btn-primary" style="padding: 6px 12px; font-size: 11px; background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);">
+                    <i class="fas fa-save"></i> Save User
+                  </button>
+                </td>
               </tr>
             `;
           });
         }
       } catch (err) {
         // Fallback list
-        tbody.innerHTML = `
-          <tr>
-            <td><strong>admin@apex.edu</strong></td>
-            <td>Dr. Donald Vance</td>
-            <td>+1 (555) 010-0001</td>
-            <td><span class="badge badge-info">COLLEGE_ADMIN</span></td>
-            <td><span class="badge badge-success">ACTIVE</span></td>
-          </tr>
-          <tr>
-            <td><strong>principal@apex.edu</strong></td>
-            <td>Dr. Arthur Pendelton</td>
-            <td>+1 (555) 010-0002</td>
-            <td><span class="badge badge-info">PRINCIPAL</span></td>
-            <td><span class="badge badge-success">ACTIVE</span></td>
-          </tr>
-        `;
+        let mockUsers = [
+          { id: 'usr_admin', email: 'admin@apex.edu', full_name: 'Dr. Donald Vance', phone: '+1 (555) 010-0001', role: 'COLLEGE_ADMIN', is_active: true },
+          { id: 'usr_principal', email: 'principal@apex.edu', full_name: 'Dr. Arthur Pendelton', phone: '+1 (555) 010-0002', role: 'PRINCIPAL', is_active: true },
+          { id: 'usr_student', email: 'student.sam@apex.edu', full_name: 'Samantha Jenkins', phone: '+1 (555) 010-0003', role: 'STUDENT', is_active: true },
+          { id: 'usr_hod', email: 'hod.cs@apex.edu', full_name: 'Dr. Charles Xavier', phone: '+1 (555) 010-0004', role: 'HOD', is_active: true }
+        ];
+        try {
+          const cached = JSON.parse(localStorage.getItem('fallback_users_cache') || '[]');
+          cached.forEach(c => {
+            if (!mockUsers.find(mu => mu.email === c.email)) {
+              mockUsers.push(c);
+            }
+          });
+          const overrides = JSON.parse(localStorage.getItem('fallback_users_overrides') || '{}');
+          mockUsers.forEach(u => {
+            if (overrides[u.id]) {
+              u.role = overrides[u.id].role;
+              u.is_active = overrides[u.id].is_active;
+            }
+          });
+        } catch (e) {}
+        
+        tbody.innerHTML = '';
+        mockUsers.forEach(u => {
+          tbody.innerHTML += `
+            <tr>
+              <td><strong>${u.email}</strong><br><small style="color:#64748b; font-family:monospace;">${u.id}</small></td>
+              <td>${u.full_name}</td>
+              <td>${u.phone || '--'}</td>
+              <td>
+                <select id="role-select-${u.id}" class="form-input" style="padding: 4px; font-size: 12px; height: auto; width: 140px; background: rgba(0,0,0,0.4); color: white; border: 1px solid rgba(255,255,255,0.1);">
+                  <option value="STUDENT" ${u.role === 'STUDENT' ? 'selected' : ''}>Student</option>
+                  <option value="FACULTY" ${u.role === 'FACULTY' ? 'selected' : ''}>Faculty / Lecturer</option>
+                  <option value="HOD" ${u.role === 'HOD' ? 'selected' : ''}>HOD</option>
+                  <option value="PRINCIPAL" ${u.role === 'PRINCIPAL' ? 'selected' : ''}>Principal</option>
+                  <option value="LIBRARIAN" ${u.role === 'LIBRARIAN' ? 'selected' : ''}>Librarian</option>
+                  <option value="HOSTEL_WARDEN" ${u.role === 'HOSTEL_WARDEN' ? 'selected' : ''}>Hostel Warden</option>
+                  <option value="ACCOUNTANT" ${u.role === 'ACCOUNTANT' ? 'selected' : ''}>Accountant</option>
+                  <option value="COLLEGE_ADMIN" ${u.role === 'COLLEGE_ADMIN' ? 'selected' : ''}>College Admin</option>
+                </select>
+              </td>
+              <td>
+                <select id="status-select-${u.id}" class="form-input" style="padding: 4px; font-size: 12px; height: auto; width: 100px; background: rgba(0,0,0,0.4); color: white; border: 1px solid rgba(255,255,255,0.1);">
+                  <option value="true" ${u.is_active ? 'selected' : ''}>ACTIVE</option>
+                  <option value="false" ${!u.is_active ? 'selected' : ''}>BLOCKED</option>
+                </select>
+              </td>
+              <td style="text-align: right;">
+                <button onclick="saveUserPermissions('${u.id}', 'role-select-${u.id}', 'status-select-${u.id}')" class="btn-primary" style="padding: 6px 12px; font-size: 11px; background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);">
+                  <i class="fas fa-save"></i> Save User
+                </button>
+              </td>
+            </tr>
+          `;
+        });
       }
     }
 
@@ -2526,6 +2664,160 @@
         }
       } catch (err) {
         alert('❌ Error vacating hostel room.');
+      }
+    }
+
+    // Role-Based User Access & Feature Permission Management Helpers
+    async function saveUserPermissions(userId, roleSelectId, activeSelectId) {
+      const role = document.getElementById(roleSelectId).value;
+      const is_active = document.getElementById(activeSelectId).value === 'true';
+      
+      try {
+        const res = await fetch(`/api/auth/users/${userId}/role-status`, {
+          method: 'POST',
+          headers: authHeaders(),
+          body: JSON.stringify({ role, is_active })
+        });
+        const data = await res.json();
+        if (data.success) {
+          alert('🟢 User permissions saved successfully!');
+          loadUsersList();
+        } else {
+          alert('❌ ' + data.message);
+        }
+      } catch (err) {
+        try {
+          let cache = JSON.parse(localStorage.getItem('fallback_users_cache') || '[]');
+          let idx = cache.findIndex(u => u.id === userId);
+          if (idx !== -1) {
+            cache[idx].role = role;
+            cache[idx].is_active = is_active;
+            localStorage.setItem('fallback_users_cache', JSON.stringify(cache));
+          } else {
+            let overrides = JSON.parse(localStorage.getItem('fallback_users_overrides') || '{}');
+            overrides[userId] = { role, is_active };
+            localStorage.setItem('fallback_users_overrides', JSON.stringify(overrides));
+          }
+          alert('🟢 [Offline Mode] User permissions saved successfully!');
+          loadUsersList();
+        } catch (e) {
+          alert('❌ Error saving user permissions.');
+        }
+      }
+    }
+
+    let roleFeaturesCache = [];
+
+    async function loadPermissionsMatrix() {
+      try {
+        const res = await fetch('/api/auth/role-features', { headers: authHeaders() });
+        const data = await res.json();
+        if (data.success) {
+          roleFeaturesCache = data.roleFeatures;
+          applyPermissionsMatrixToUI();
+        }
+      } catch (err) {
+        try {
+          const cached = localStorage.getItem('fallback_role_features');
+          if (cached) {
+            roleFeaturesCache = JSON.parse(cached);
+          } else {
+            roleFeaturesCache = [
+              { role: 'STUDENT', allowed_features: ["ai_assistant", "hostel", "transport", "fees", "library"] },
+              { role: 'FACULTY', allowed_features: ["ai_assistant", "notices", "leaves"] },
+              { role: 'PRINCIPAL', allowed_features: ["ai_assistant", "notices", "leaves", "admissions", "recruitment", "hostel", "transport"] },
+              { role: 'HOSTEL_WARDEN', allowed_features: ["hostel", "transport"] },
+              { role: 'LIBRARIAN', allowed_features: ["library"] },
+              { role: 'ACCOUNTANT', allowed_features: ["fees"] },
+              { role: 'HOD', allowed_features: ["ai_assistant", "notices", "leaves"] }
+            ];
+            localStorage.setItem('fallback_role_features', JSON.stringify(roleFeaturesCache));
+          }
+          applyPermissionsMatrixToUI();
+        } catch (e) {
+          console.error('loadPermissionsMatrix failed:', e);
+        }
+      }
+    }
+
+    function applyPermissionsMatrixToUI() {
+      const checkboxes = document.querySelectorAll('.rf-cb');
+      checkboxes.forEach(cb => {
+        const role = cb.getAttribute('data-role');
+        const feature = cb.getAttribute('data-feature');
+        const mapping = roleFeaturesCache.find(rf => rf.role === role);
+        if (mapping && mapping.allowed_features) {
+          cb.checked = mapping.allowed_features.includes(feature);
+        } else {
+          cb.checked = false;
+        }
+      });
+      applyRolePermissionsUI();
+    }
+
+    function applyRolePermissionsUI() {
+      if (!currentUser) return;
+      const role = currentUser.role;
+      
+      const mapping = roleFeaturesCache.find(rf => rf.role === role);
+      const allowed = mapping ? mapping.allowed_features : ["ai_assistant", "hostel", "transport", "fees", "library"];
+
+      const studentHostelCard = document.getElementById('studentHostelCard');
+      const studentGpsCard = document.getElementById('studentGpsCard');
+      const studentFeesCard = document.getElementById('studentFeesCard');
+
+      if (role === 'STUDENT') {
+        if (studentHostelCard) {
+          studentHostelCard.style.display = allowed.includes('hostel') ? 'flex' : 'none';
+        }
+        if (studentGpsCard) {
+          studentGpsCard.style.display = allowed.includes('transport') ? 'block' : 'none';
+        }
+        if (studentFeesCard) {
+          studentFeesCard.style.display = allowed.includes('fees') ? 'block' : 'none';
+        }
+      }
+    }
+
+    async function toggleRoleFeature(cb) {
+      const role = cb.getAttribute('data-role');
+      const feature = cb.getAttribute('data-feature');
+      
+      let mapping = roleFeaturesCache.find(rf => rf.role === role);
+      if (!mapping) {
+        mapping = { role, allowed_features: [] };
+        roleFeaturesCache.push(mapping);
+      }
+      
+      if (cb.checked) {
+        if (!mapping.allowed_features.includes(feature)) {
+          mapping.allowed_features.push(feature);
+        }
+      } else {
+        mapping.allowed_features = mapping.allowed_features.filter(f => f !== feature);
+      }
+
+      try {
+        const res = await fetch('/api/auth/role-features', {
+          method: 'POST',
+          headers: authHeaders(),
+          body: JSON.stringify({ role, allowed_features: mapping.allowed_features })
+        });
+        const data = await res.json();
+        if (data.success) {
+          applyPermissionsMatrixToUI();
+        } else {
+          alert('❌ Failed to update permissions: ' + data.message);
+          cb.checked = !cb.checked;
+        }
+      } catch (err) {
+        try {
+          localStorage.setItem('fallback_role_features', JSON.stringify(roleFeaturesCache));
+          applyPermissionsMatrixToUI();
+        } catch (e) {
+          alert('❌ Error updating offline permissions.');
+          cb.checked = !cb.checked;
+        }
       }
     }
   </script>

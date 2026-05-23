@@ -71,7 +71,8 @@ let mockDb = {
   streams: [],
   subjects: [],
   leaves: [],
-  offline_sync_queue: []
+  offline_sync_queue: [],
+  role_features: []
 };
 
 // Initialize Mock Fallback Seed Data
@@ -126,6 +127,18 @@ function initMockDb() {
       }
       if (!mockDb.hostel_visitors) {
         mockDb.hostel_visitors = [];
+        modified = true;
+      }
+      if (!mockDb.role_features || mockDb.role_features.length === 0) {
+        mockDb.role_features = [
+          { role: 'STUDENT', allowed_features: ["ai_assistant", "hostel", "transport", "fees", "library"] },
+          { role: 'FACULTY', allowed_features: ["ai_assistant", "notices", "leaves"] },
+          { role: 'PRINCIPAL', allowed_features: ["ai_assistant", "notices", "leaves", "admissions", "recruitment", "hostel", "transport"] },
+          { role: 'HOSTEL_WARDEN', allowed_features: ["hostel", "transport"] },
+          { role: 'LIBRARIAN', allowed_features: ["library"] },
+          { role: 'ACCOUNTANT', allowed_features: ["fees"] },
+          { role: 'HOD', allowed_features: ["ai_assistant", "notices", "leaves"] }
+        ];
         modified = true;
       }
       if (modified) {
@@ -352,6 +365,17 @@ function initMockDb() {
   ];
 
   mockDb.offline_sync_queue = [];
+
+  // Role Features fresh seed
+  mockDb.role_features = [
+    { role: 'STUDENT', allowed_features: ["ai_assistant", "hostel", "transport", "fees", "library"] },
+    { role: 'FACULTY', allowed_features: ["ai_assistant", "notices", "leaves"] },
+    { role: 'PRINCIPAL', allowed_features: ["ai_assistant", "notices", "leaves", "admissions", "recruitment", "hostel", "transport"] },
+    { role: 'HOSTEL_WARDEN', allowed_features: ["hostel", "transport"] },
+    { role: 'LIBRARIAN', allowed_features: ["library"] },
+    { role: 'ACCOUNTANT', allowed_features: ["fees"] },
+    { role: 'HOD', allowed_features: ["ai_assistant", "notices", "leaves"] }
+  ];
 
   saveMockDb();
 }
@@ -836,6 +860,30 @@ const mockQuery = async (text, params = []) => {
       }
       saveMockDb();
       result.rows = [];
+    }
+    else if (normText.includes('update public.tenant_users set role =')) {
+      const [role, is_active, id] = params;
+      const u = mockDb.users.find(usr => usr.id === id);
+      if (u) {
+        u.role = role;
+        u.is_active = (is_active === true || is_active === 'true' || is_active === 1 || is_active === '1');
+        saveMockDb();
+        result.rows = [u];
+      }
+    }
+    else if (normText.includes('insert into public.tenant_role_features') || normText.includes('update public.tenant_role_features')) {
+      const role = params[0];
+      const allowed_features = typeof params[1] === 'string' ? JSON.parse(params[1]) : params[1];
+      
+      let item = mockDb.role_features.find(rf => rf.role === role);
+      if (item) {
+        item.allowed_features = allowed_features;
+      } else {
+        item = { role, allowed_features };
+        mockDb.role_features.push(item);
+      }
+      saveMockDb();
+      result.rows = [item];
     }
     // 15. Catch all generic selects for demo dashboards
     else {

@@ -155,4 +155,109 @@ router.get('/users', protect, async (req, res) => {
   }
 });
 
+// @desc    Update User Role and Account Status
+// @route   POST /api/auth/users/:id/role-status
+// @access  Private (College Admin only)
+router.post('/users/:id/role-status', protect, async (req, res) => {
+  if (req.user.role !== 'COLLEGE_ADMIN' && req.user.email !== 'admin@apex.edu') {
+    return res.status(403).json({ success: false, message: 'Access denied: only College Admin can modify user permissions' });
+  }
+
+  const { role, is_active } = req.body;
+  const userId = req.params.id;
+
+  if (!role) {
+    return res.status(400).json({ success: false, message: 'Role is required' });
+  }
+
+  try {
+    const checkUser = await db.query('SELECT id FROM public.tenant_users WHERE id = $1', [userId]);
+    if (checkUser.rowCount === 0) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    const isActiveBool = (is_active === true || is_active === 'true' || is_active === 1 || is_active === '1');
+
+    const result = await db.query(
+      'UPDATE public.tenant_users SET role = $1, is_active = $2 WHERE id = $3 RETURNING id, email, full_name, role, is_active',
+      [role, isActiveBool, userId]
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: 'User permissions updated successfully!',
+      user: result.rows[0]
+    });
+  } catch (err) {
+    console.error('Update user role-status error:', err);
+    return res.status(500).json({ success: false, message: 'Failed to update user access' });
+  }
+});
+
+// @desc    Get All Role Feature Permissions Mappings
+// @route   GET /api/auth/role-features
+// @access  Private
+router.get('/role-features', protect, async (req, res) => {
+  try {
+    let result;
+    if (db.isFallback && db.isFallback()) {
+      result = { rows: db.getMockDb().role_features || [] };
+    } else {
+      result = await db.query('SELECT * FROM public.tenant_role_features');
+    }
+    return res.status(200).json({ success: true, roleFeatures: result.rows });
+  } catch (err) {
+    console.error('Fetch role features error:', err);
+    return res.status(500).json({ success: false, message: 'Failed to fetch role permissions matrix' });
+  }
+});
+
+// @desc    Update/Save Feature Mappings for a Specific Role
+// @route   POST /api/auth/role-features
+// @access  Private (College Admin only)
+router.post('/role-features', protect, async (req, res) => {
+  if (req.user.role !== 'COLLEGE_ADMIN' && req.user.email !== 'admin@apex.edu') {
+    return res.status(403).json({ success: false, message: 'Access denied: only College Admin can modify feature mappings' });
+  }
+
+  const { role, allowed_features } = req.body;
+
+  if (!role || !allowed_features || !Array.isArray(allowed_features)) {
+    return res.status(400).json({ success: false, message: 'Role and allowed_features array are required' });
+  }
+
+  try {
+    let result;
+    if (db.isFallback && db.isFallback()) {
+      const mockDb = db.getMockDb();
+      let item = mockDb.role_features.find(rf => rf.role === role);
+      if (item) {
+        item.allowed_features = allowed_features;
+      } else {
+        item = { role, allowed_features };
+        mockDb.role_features.push(item);
+      }
+      db.saveMockDb();
+      result = { rows: [item] };
+    } else {
+      const queryText = `
+        INSERT INTO public.tenant_role_features (role, allowed_features)
+        VALUES ($1, $2)
+        ON CONFLICT (role) DO UPDATE SET allowed_features = EXCLUDED.allowed_features
+        RETURNING *
+      `;
+      result = await db.query(queryText, [role, JSON.stringify(allowed_features)]);
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: `Role permissions for [${role}] updated successfully!`,
+      roleFeature: result.rows[0]
+    });
+  } catch (err) {
+    console.error('Update role features error:', err);
+    return res.status(500).json({ success: false, message: 'Failed to save role feature permissions' });
+  }
+});
+
 module.exports = router;
