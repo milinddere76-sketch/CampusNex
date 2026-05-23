@@ -20,6 +20,7 @@ const admissionsRoutes = require('./routes/admissions');
 const recruitmentRoutes = require('./routes/recruitment');
 const documentsRoutes = require('./routes/documents');
 const employeesRoutes = require('./routes/employees');
+const noticesRoutes = require('./routes/notices');
 
 const app = express();
 const server = http.createServer(app);
@@ -109,6 +110,7 @@ app.use('/api/admissions', admissionsRoutes);
 app.use('/api/recruitment', recruitmentRoutes);
 app.use('/api/documents', documentsRoutes);
 app.use('/api/employees', employeesRoutes);
+app.use('/api/notices', noticesRoutes);
 
 // Server status
 app.get('/api-status', (req, res) => {

@@ -168,10 +168,10 @@ VALUES
 (1, '44444444-4444-4444-4444-444444444444', 'https://apex.campusone.app/storage/resumes/alex_doe_resume.pdf', 'APPLIED');
 
 -- 16. SEED NOTICES
-INSERT INTO public.tenant_notices (title, content, audience_roles, attachment_url)
+INSERT INTO public.tenant_notices (title, content, audience_roles, attachment_url, is_approved)
 VALUES
-('Midterm Review Seminar', 'Prof Marcus is conducting a DSA review lecture on Binary Search Tree rebalancing algorithms this Friday evening at 5 PM in Room 102. Attendance is highly recommended.', '["STUDENT"]', 'https://apex.campusone.app/notices/dsa_session.pdf'),
-('Annual Cultural Tech Fest 2026', 'Registrations are now officially open for ApexTechFest 2026. Cash rewards up to $15,000 for standard hackathon submissions.', '["STUDENT", "FACULTY", "COLLEGE_ADMIN"]', NULL);
+('Midterm Review Seminar', 'Prof Marcus is conducting a DSA review lecture on Binary Search Tree rebalancing algorithms this Friday evening at 5 PM in Room 102. Attendance is highly recommended.', '["STUDENT"]', 'https://apex.campusone.app/notices/dsa_session.pdf', TRUE),
+('Annual Cultural Tech Fest 2026', 'Registrations are now officially open for ApexTechFest 2026. Cash rewards up to $15,000 for standard hackathon submissions.', '["STUDENT", "FACULTY", "COLLEGE_ADMIN"]', NULL, TRUE);
 
 -- 17. SEED CHAT
 INSERT INTO public.tenant_chat_messages (sender_id, receiver_id, message, file_url, sent_at, is_read)

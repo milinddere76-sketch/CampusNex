@@ -305,6 +305,7 @@ CREATE TABLE IF NOT EXISTS public.tenant_notices (
     content TEXT NOT NULL,
     audience_roles JSONB, -- Array of strings e.g. ["STUDENT", "FACULTY"]
     attachment_url TEXT,
+    is_approved BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
