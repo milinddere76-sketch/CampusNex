@@ -15,7 +15,7 @@ const getJwtSecret = () => {
 // @route   POST /api/auth/register
 // @access  Public
 router.post('/register', async (req, res) => {
-  const { email, password, full_name, phone, role } = req.body;
+  const { email, password, full_name, phone, role, assigned_streams } = req.body;
 
   // Input validation
   if (!email || !password || !full_name) {
@@ -42,8 +42,8 @@ router.post('/register', async (req, res) => {
     const passwordHash = await bcrypt.hash(password, salt);
 
     const newUser = await db.query(
-      'INSERT INTO public.tenant_users (id, email, password_hash, phone, full_name, role) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id, email, full_name, role',
-      [uuidv4(), email.toLowerCase().trim(), passwordHash, phone || '', full_name, role || 'STUDENT']
+      'INSERT INTO public.tenant_users (id, email, password_hash, phone, full_name, role, assigned_streams) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id, email, full_name, role, assigned_streams',
+      [uuidv4(), email.toLowerCase().trim(), passwordHash, phone || '', full_name, role || 'STUDENT', JSON.stringify(assigned_streams || [])]
     );
 
     const token = jwt.sign(
@@ -55,7 +55,7 @@ router.post('/register', async (req, res) => {
     return res.status(201).json({
       success: true,
       token,
-      user: newUser.rows[0]  // id, email, full_name, role — no password_hash
+      user: newUser.rows[0]  // id, email, full_name, role, assigned_streams — no password_hash
     });
   } catch (err) {
     console.error('Registration failed:', err.message);
@@ -75,7 +75,7 @@ router.post('/login', async (req, res) => {
 
   try {
     const userRes = await db.query(
-      'SELECT id, email, full_name, role, phone, device_id, password_hash, is_active FROM public.tenant_users WHERE email = $1',
+      'SELECT id, email, full_name, role, phone, device_id, password_hash, is_active, assigned_streams FROM public.tenant_users WHERE email = $1',
       [email.toLowerCase().trim()]
     );
 
@@ -109,7 +109,8 @@ router.post('/login', async (req, res) => {
         full_name: user.full_name,
         role: user.role,
         phone: user.phone,
-        device_id: user.device_id
+        device_id: user.device_id,
+        assigned_streams: user.assigned_streams
       }
     });
   } catch (err) {
@@ -124,7 +125,7 @@ router.post('/login', async (req, res) => {
 router.get('/me', protect, async (req, res) => {
   try {
     const userRes = await db.query(
-      'SELECT id, email, full_name, role, phone, device_id FROM public.tenant_users WHERE id = $1',
+      'SELECT id, email, full_name, role, phone, device_id, assigned_streams FROM public.tenant_users WHERE id = $1',
       [req.user.id]
     );
 

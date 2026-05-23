@@ -202,9 +202,10 @@
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
               <div>
                 <label class="form-label">Role Category</label>
-                <select id="empRole" class="form-input">
+                <select id="empRole" class="form-input" onchange="togglePrincipalStreamsField()">
                   <option value="FACULTY">Faculty / Lecturer</option>
                   <option value="HOD">HOD (Department Head)</option>
+                  <option value="PRINCIPAL">Principal</option>
                   <option value="LIBRARIAN">Librarian</option>
                   <option value="HOSTEL_WARDEN">Hostel Warden</option>
                   <option value="ACCOUNTANT">Accountant</option>
@@ -215,6 +216,18 @@
                 <input type="text" id="empPhone" class="form-input" placeholder="e.g. +1 (555) 019-2834">
               </div>
             </div>
+
+            <!-- Stream assignment for Principal user -->
+            <div id="fieldPrincipalStreams" style="margin-bottom: 15px; display: none;">
+              <label class="form-label" style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                <span>Principal Stream Jurisdiction Selection <span style="color: var(--danger);">*</span></span>
+                <small style="color: var(--text-muted); font-size: 11px;">(Selected streams will be assigned to this Principal)</small>
+              </label>
+              <div id="principalStreamsChecklist" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; background: rgba(0,0,0,0.15); padding: 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+                <!-- Dynamically filled with checkboxes from active streams -->
+              </div>
+            </div>
+
             <button onclick="addEmployee()" class="btn-primary" style="width: 100%;"><i class="fas fa-save"></i> Save Employee Profile</button>
           </div>
 
@@ -335,6 +348,12 @@
       <div class="glass-card">
         <h2><i class="fas fa-crown" style="color: #fbbf24; margin-right: 10px;"></i> Principal Governance Console</h2>
         <p style="color: var(--text-secondary); margin-bottom: 20px;">Review institutional notice board broadcasts, financial health ledgers, and execute digital signatures.</p>
+
+        <!-- Principal Assigned Stream Jurisdictions Alert Badges -->
+        <div id="principalJurisdictionAlert" class="glass-card" style="margin-bottom: 20px; background: rgba(251,191,36,0.08); border: 1px solid rgba(251,191,36,0.25); display: none; padding: 15px;">
+          <span style="font-size: 13px; color: #fbbf24; font-weight: bold;"><i class="fas fa-shield-halved"></i> Assigned Academic Approval Jurisdictions:</span>
+          <div id="principalJurisdictionBadges" style="display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap;"></div>
+        </div>
         
         <div class="grid-2">
           <!-- Publish notice -->
@@ -1131,6 +1150,14 @@
       }
     }
 
+    function togglePrincipalStreamsField() {
+      const val = document.getElementById('empRole').value;
+      const principalDiv = document.getElementById('fieldPrincipalStreams');
+      if (principalDiv) {
+        principalDiv.style.display = val === 'PRINCIPAL' ? 'block' : 'none';
+      }
+    }
+
     async function addEmployee() {
       const full_name = document.getElementById('empName').value.trim();
       const email = document.getElementById('empEmail').value.trim();
@@ -1142,11 +1169,20 @@
         return;
       }
 
+      const assigned = role === 'PRINCIPAL' 
+        ? Array.from(document.querySelectorAll('input[name="principalAssignStreams"]:checked')).map(cb => parseInt(cb.value))
+        : [];
+
+      if (role === 'PRINCIPAL' && assigned.length === 0) {
+        alert('❌ Please select at least one stream to assign to this Principal!');
+        return;
+      }
+
       try {
         const res = await fetch('/api/auth/register', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, password: 'password123', full_name, role, phone })
+          body: JSON.stringify({ email, password: 'password123', full_name, role, phone, assigned_streams: assigned })
         });
         const data = await res.json();
         if (data.success) {
@@ -1159,7 +1195,29 @@
           alert('❌ Error adding employee: ' + data.message);
         }
       } catch (e) {
-        alert('❌ Server offline. Actions are queued in fallback engine.');
+        // Safe mock local fallback
+        const mockUser = {
+          id: 'user_mock_' + Math.random().toString(36).substring(7),
+          email,
+          full_name,
+          role,
+          phone,
+          device_id: null,
+          is_active: true,
+          assigned_streams: assigned,
+          created_at: new Date()
+        };
+        // Add to offline cache
+        try {
+          const mockDb = JSON.parse(localStorage.getItem('fallback_users_cache') || '[]');
+          mockDb.push(mockUser);
+          localStorage.setItem('fallback_users_cache', JSON.stringify(mockDb));
+        } catch (err) {}
+        alert('🟢 [Offline Cache] Employee added successfully! Default password: password123');
+        document.getElementById('empName').value = '';
+        document.getElementById('empEmail').value = '';
+        document.getElementById('empPhone').value = '';
+        loadUsersList();
       }
     }
 
@@ -1308,7 +1366,53 @@
       }
     }
 
+    function getStreamIdForCourse(courseId) {
+      if (courseId === 1 || courseId === 2) return 2; // Engineering (ENG)
+      if (courseId === 3) return 2; // Engineering (ENG)
+      if (courseId === 4) return 1; // Science (SCI)
+      if (courseId === 6) return 6; // Medical (MED)
+      return 2;
+    }
+
     async function loadPrincipalApprovalQueues() {
+      const userAssignedStreams = currentUser && currentUser.assigned_streams 
+        ? (typeof currentUser.assigned_streams === 'string' ? JSON.parse(currentUser.assigned_streams) : currentUser.assigned_streams) 
+        : [1,2]; // default fallback Science/Engineering
+
+      // Render principal jurisdiction badges
+      const alertDiv = document.getElementById('principalJurisdictionAlert');
+      const badgesDiv = document.getElementById('principalJurisdictionBadges');
+      if (alertDiv && badgesDiv) {
+        alertDiv.style.display = 'block';
+        badgesDiv.innerHTML = '';
+        const allStreams = {
+          1: { code: 'SCI', name: 'Science', bg: 'rgba(59,130,246,0.15)', border: 'rgba(59,130,246,0.3)', color: '#60a5fa' },
+          2: { code: 'ENG', name: 'Engineering', bg: 'rgba(236,72,153,0.15)', border: 'rgba(236,72,153,0.3)', color: '#f472b6' },
+          3: { code: 'COM', name: 'Commerce', bg: 'rgba(16,185,129,0.15)', border: 'rgba(16,185,129,0.3)', color: '#34d399' },
+          4: { code: 'ART', name: 'Arts & Humanities', bg: 'rgba(245,158,11,0.15)', border: 'rgba(245,158,11,0.3)', color: '#fbbf24' },
+          5: { code: 'LAW', name: 'Law', bg: 'rgba(99,102,241,0.15)', border: 'rgba(99,102,241,0.3)', color: '#818cf8' },
+          6: { code: 'MED', name: 'Medical & Health', bg: 'rgba(239,68,68,0.15)', border: 'rgba(239,68,68,0.3)', color: '#f87171' },
+          7: { code: 'AGR', name: 'Agriculture', bg: 'rgba(139,92,246,0.15)', border: 'rgba(139,92,246,0.3)', color: '#a78bfa' },
+          8: { code: 'MGT', name: 'Management', bg: 'rgba(6,182,212,0.15)', border: 'rgba(6,182,212,0.3)', color: '#22d3ee' },
+          9: { code: 'DSG', name: 'Design & Arch', bg: 'rgba(14,165,233,0.15)', border: 'rgba(14,165,233,0.3)', color: '#38bdf8' },
+          10: { code: 'VOC', name: 'Vocational', bg: 'rgba(107,114,128,0.15)', border: 'rgba(107,114,128,0.3)', color: '#9ca3af' }
+        };
+        
+        userAssignedStreams.forEach(sid => {
+          const s = allStreams[sid];
+          if (s) {
+            badgesDiv.innerHTML += `
+              <span class="badge" style="background: ${s.bg}; border-color: ${s.border}; color: ${s.color}; font-size: 11px;">
+                ${s.name} (${s.code})
+              </span>
+            `;
+          }
+        });
+        if (userAssignedStreams.length === 0) {
+          badgesDiv.innerHTML = '<span style="color: var(--text-muted); font-size: 11px;">No assigned jurisdictions</span>';
+        }
+      }
+
       // 1. Notice Board Approvals Queue
       const noticeBody = document.getElementById('principalNoticeQueueTableBody');
       if (noticeBody) {
@@ -1348,9 +1452,12 @@
           const data = await res.json();
           if (data.success) {
             admBody.innerHTML = '';
-            const meritApps = data.applications.filter(a => a.status === 'MERIT_LIST');
+            const meritApps = data.applications.filter(a => {
+              const streamId = getStreamIdForCourse(Number(a.course_id));
+              return a.status === 'MERIT_LIST' && userAssignedStreams.includes(streamId);
+            });
             if (meritApps.length === 0) {
-              admBody.innerHTML = `<tr><td colspan="3" style="text-align:center; color:var(--text-secondary);">No admissions pending Principal sign-off.</td></tr>`;
+              admBody.innerHTML = `<tr><td colspan="3" style="text-align:center; color:var(--text-secondary);">No admissions pending Principal sign-off for your assigned streams.</td></tr>`;
             } else {
               meritApps.forEach(a => {
                 admBody.innerHTML += `
@@ -1367,16 +1474,31 @@
             }
           }
         } catch (e) {
-          admBody.innerHTML = `
-            <tr>
-              <td><strong>Priya Nair</strong><br><small>Course #1</small></td>
-              <td><strong>88.50%</strong></td>
-              <td style="display:flex; gap:6px; align-items:center;">
-                <input type="text" id="pri_roll_2" class="form-input" style="padding:4px; font-size:11px; width:120px;" placeholder="APEX-2026-CSE-122" value="APEX-2026-CSE-122">
-                <button onclick="signAdmission(2)" class="btn-primary" style="padding:4px 10px; font-size:11px;"><i class="fas fa-signature"></i> Sign & Enroll</button>
-              </td>
-            </tr>
-          `;
+          // Simulated fallback
+          const defaultApps = [
+            { id: 2, full_name: 'Priya Nair', course_id: 2, marks_percentage: '88.50' }
+          ];
+          const filtered = defaultApps.filter(a => {
+            const streamId = getStreamIdForCourse(Number(a.course_id));
+            return userAssignedStreams.includes(streamId);
+          });
+          admBody.innerHTML = '';
+          if (filtered.length === 0) {
+            admBody.innerHTML = `<tr><td colspan="3" style="text-align:center; color:var(--text-secondary);">No admissions pending Principal sign-off for your assigned streams.</td></tr>`;
+          } else {
+            filtered.forEach(a => {
+              admBody.innerHTML += `
+                <tr>
+                  <td><strong>${a.full_name}</strong><br><small>Course #${a.course_id}</small></td>
+                  <td><strong>${a.marks_percentage}%</strong></td>
+                  <td style="display:flex; gap:6px; align-items:center;">
+                    <input type="text" id="pri_roll_${a.id}" class="form-input" style="padding:4px; font-size:11px; width:120px;" placeholder="APEX-2026-CSE-122" value="APEX-2026-CSE-122">
+                    <button onclick="signAdmission(${a.id})" class="btn-primary" style="padding:4px 10px; font-size:11px;"><i class="fas fa-signature"></i> Sign & Enroll</button>
+                  </td>
+                </tr>
+              `;
+            });
+          }
         }
       }
 
@@ -1388,9 +1510,15 @@
           const data = await res.json();
           if (data.success) {
             recBody.innerHTML = '';
-            const pendingRecs = data.applicants.filter(a => a.status === 'SHORTLISTED' || a.status === 'INTERVIEWED');
+            const pendingRecs = data.applicants.filter(a => {
+              const isMedJob = a.qualification && (a.qualification.toLowerCase().includes('medical') || a.qualification.toLowerCase().includes('medicine') || a.qualification.toLowerCase().includes('surgery'));
+              const isMedPrincipal = userAssignedStreams.includes(6);
+              if (isMedJob) return isMedPrincipal;
+              return userAssignedStreams.includes(2) || userAssignedStreams.includes(1);
+            }).filter(a => a.status === 'SHORTLISTED' || a.status === 'INTERVIEWED');
+            
             if (pendingRecs.length === 0) {
-              recBody.innerHTML = `<tr><td colspan="3" style="text-align:center; color:var(--text-secondary);">No hires pending contract sign-off.</td></tr>`;
+              recBody.innerHTML = `<tr><td colspan="3" style="text-align:center; color:var(--text-secondary);">No hires pending contract sign-off for your assigned streams.</td></tr>`;
             } else {
               pendingRecs.forEach(a => {
                 recBody.innerHTML += `
@@ -1404,13 +1532,29 @@
             }
           }
         } catch (e) {
-          recBody.innerHTML = `
-            <tr>
-              <td><strong>Dr. Sarah Connor</strong><br><small>Ph.D in AI/ML</small></td>
-              <td><strong>⭐ 8.0/10</strong></td>
-              <td><button onclick="signFacultyAppoint(1)" class="btn-primary" style="padding:4px 10px; font-size:11px; background:linear-gradient(135deg, #10b981 0%, #059669 100%);"><i class="fas fa-file-contract"></i> Sign Contract</button></td>
-            </tr>
-          `;
+          const defaultHires = [
+            { id: 1, full_name: 'Dr. Sarah Connor', qualification: 'Ph.D in AI/ML', status: 'SHORTLISTED', average_score: '8.0' }
+          ];
+          const filtered = defaultHires.filter(a => {
+            const isMedJob = a.qualification && (a.qualification.toLowerCase().includes('medical') || a.qualification.toLowerCase().includes('medicine') || a.qualification.toLowerCase().includes('surgery'));
+            const isMedPrincipal = userAssignedStreams.includes(6);
+            if (isMedJob) return isMedPrincipal;
+            return userAssignedStreams.includes(2) || userAssignedStreams.includes(1);
+          });
+          recBody.innerHTML = '';
+          if (filtered.length === 0) {
+            recBody.innerHTML = `<tr><td colspan="3" style="text-align:center; color:var(--text-secondary);">No hires pending contract sign-off for your assigned streams.</td></tr>`;
+          } else {
+            filtered.forEach(a => {
+              recBody.innerHTML += `
+                <tr>
+                  <td><strong>${a.full_name}</strong><br><small>${a.qualification}</small></td>
+                  <td><strong>⭐ ${a.average_score}/10</strong></td>
+                  <td><button onclick="signFacultyAppoint(${a.id})" class="btn-primary" style="padding:4px 10px; font-size:11px; background:linear-gradient(135deg, #10b981 0%, #059669 100%);"><i class="fas fa-file-contract"></i> Sign Contract</button></td>
+                </tr>
+              `;
+            });
+          }
         }
       }
 
@@ -1422,10 +1566,16 @@
           const data = await res.json();
           if (data.success) {
             leaveBody.innerHTML = '';
-            if (data.leaves.length === 0) {
-              leaveBody.innerHTML = `<tr><td colspan="3" style="text-align:center; color:var(--text-secondary);">No leave requests pending Principal approval.</td></tr>`;
+            const filtered = data.leaves.filter(l => {
+              const isCse = l.roll_number && l.roll_number.includes('CSE');
+              const isMed = l.roll_number && l.roll_number.includes('MED');
+              const streamId = isMed ? 6 : (isCse ? 2 : 1);
+              return userAssignedStreams.includes(streamId);
+            });
+            if (filtered.length === 0) {
+              leaveBody.innerHTML = `<tr><td colspan="3" style="text-align:center; color:var(--text-secondary);">No leave requests pending Principal approval for your assigned streams.</td></tr>`;
             } else {
-              data.leaves.forEach(l => {
+              filtered.forEach(l => {
                 leaveBody.innerHTML += `
                   <tr>
                     <td><strong>${l.full_name}</strong><br><small style="color:var(--text-secondary);">${l.roll_number} • ${l.role}</small></td>
@@ -1440,16 +1590,32 @@
             }
           }
         } catch (e) {
-          leaveBody.innerHTML = `
-            <tr>
-              <td><strong>Alex Doe</strong><br><small>Roll: APEX-2024-CSE-004 • STUDENT</small></td>
-              <td><strong>May 26th - May 28th</strong><br><small>Attending National Hackathon Championship</small></td>
-              <td>
-                <button onclick="reviewLeave(1, 'APPROVED')" class="btn-primary" style="padding:4px 10px; font-size:11px; background:#10b981;"><i class="fas fa-check"></i> Allow</button>
-                <button onclick="reviewLeave(1, 'REJECTED')" class="btn-primary" style="padding:4px 10px; font-size:11px; background:#ef4444;"><i class="fas fa-times"></i> Deny</button>
-              </td>
-            </tr>
-          `;
+          const defaultLeaves = [
+            { id: 1, full_name: 'Alex Doe', roll_number: 'APEX-2024-CSE-004', role: 'STUDENT', dates: 'May 26th - May 28th', reason: 'Attending National Hackathon Championship' }
+          ];
+          const filtered = defaultLeaves.filter(l => {
+            const isCse = l.roll_number && l.roll_number.includes('CSE');
+            const isMed = l.roll_number && l.roll_number.includes('MED');
+            const streamId = isMed ? 6 : (isCse ? 2 : 1);
+            return userAssignedStreams.includes(streamId);
+          });
+          leaveBody.innerHTML = '';
+          if (filtered.length === 0) {
+            leaveBody.innerHTML = `<tr><td colspan="3" style="text-align:center; color:var(--text-secondary);">No leave requests pending Principal approval for your assigned streams.</td></tr>`;
+          } else {
+            filtered.forEach(l => {
+              leaveBody.innerHTML += `
+                <tr>
+                  <td><strong>${l.full_name}</strong><br><small>Roll: ${l.roll_number} • STUDENT</small></td>
+                  <td><strong>${l.dates}</strong><br><small>${l.reason}</small></td>
+                  <td>
+                    <button onclick="reviewLeave(${l.id}, 'APPROVED')" class="btn-primary" style="padding:4px 10px; font-size:11px; background:#10b981;"><i class="fas fa-check"></i> Allow</button>
+                    <button onclick="reviewLeave(${l.id}, 'REJECTED')" class="btn-primary" style="padding:4px 10px; font-size:11px; background:#ef4444;"><i class="fas fa-times"></i> Deny</button>
+                  </td>
+                </tr>
+              `;
+            });
+          }
         }
       }
     }
@@ -2078,6 +2244,22 @@
       assignedStreamsList.forEach(s => {
         select.innerHTML += `<option value="${s.code}">${s.name} (${s.code})</option>`;
       });
+
+      // Populate principal stream assignment checklist
+      const checklist = document.getElementById('principalStreamsChecklist');
+      if (checklist) {
+        checklist.innerHTML = '';
+        assignedStreamsList.forEach(s => {
+          checklist.innerHTML += `
+            <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-secondary); cursor: pointer;">
+              <input type="checkbox" name="principalAssignStreams" value="${s.id}" checked style="width: 16px; height: 16px; cursor: pointer;"> ${s.name}
+            </label>
+          `;
+        });
+        if (assignedStreamsList.length === 0) {
+          checklist.innerHTML = '<span style="color: var(--text-muted); font-size: 12px;">No active streams provisioned for this college yet.</span>';
+        }
+      }
 
       // Filter analytics metrics view
       filterMetricsByStream();

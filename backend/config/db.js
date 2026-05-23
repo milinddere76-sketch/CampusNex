@@ -143,7 +143,7 @@ function initMockDb() {
 
   mockDb.users = [
     { id: '77777777-7777-7777-7777-777777777777', email: 'admin@apex.edu', password_hash: hashedPw, phone: '+1 (555) 010-0001', full_name: 'Dr. Donald Vance', role: 'COLLEGE_ADMIN', device_id: 'dev_admin_mac', is_active: true },
-    { id: '11111111-1111-1111-1111-111111111111', email: 'principal@apex.edu', password_hash: hashedPw, phone: '+1 (555) 010-0002', full_name: 'Dr. Arthur Pendelton', role: 'PRINCIPAL', device_id: 'dev_principal_ipad', is_active: true },
+    { id: '11111111-1111-1111-1111-111111111111', email: 'principal@apex.edu', password_hash: hashedPw, phone: '+1 (555) 010-0002', full_name: 'Dr. Arthur Pendelton', role: 'PRINCIPAL', device_id: 'dev_principal_ipad', is_active: true, assigned_streams: '[1,2]' },
     { id: '22222222-2222-2222-2222-222222222222', email: 'hod.cs@apex.edu', password_hash: hashedPw, phone: '+1 (555) 010-0003', full_name: 'Dr. Elizabeth Hopper', role: 'HOD', device_id: 'dev_hod_desktop', is_active: true },
     { id: '33333333-3333-3333-3333-333333333333', email: 'faculty.smith@apex.edu', password_hash: hashedPw, phone: '+1 (555) 010-0004', full_name: 'Prof. Marcus Smith', role: 'FACULTY', device_id: 'dev_fac_phone', is_active: true },
     { id: '44444444-4444-4444-4444-444444444444', email: 'student.alex@apex.edu', password_hash: hashedPw, phone: '+1 (555) 010-0005', full_name: 'Alex Doe', role: 'STUDENT', device_id: 'dev_student_alex_android', is_active: true },
@@ -502,7 +502,7 @@ const mockQuery = async (text, params = []) => {
     }
     // 7. INSERT INTO public.tenant_users
     else if (normText.includes('insert into public.tenant_users')) {
-      // params: [id, email, password_hash, phone, full_name, role]
+      // params: [id, email, password_hash, phone, full_name, role, assigned_streams]
       const newUser = {
         id: params[0],
         email: params[1],
@@ -512,6 +512,7 @@ const mockQuery = async (text, params = []) => {
         role: params[5],
         device_id: null,
         is_active: true,
+        assigned_streams: params[6] || '[]',
         created_at: new Date()
       };
       mockDb.users.push(newUser);
